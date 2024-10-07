@@ -2,7 +2,8 @@
   "name": "BetterX-Desktop",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "electron ./src/index.js"
   },
@@ -12,6 +13,7 @@
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
     "electron": "^32.1.2",
-    "electron-builder": "^25.1.7"
+    "electron-builder": "^25.1.7",
+    "electron-context-menu": "^4.0.4"
   }
 }

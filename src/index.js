@@ -1,8 +1,9 @@
-const { app, BrowserWindow, session } = require('electron');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
-const https = require('https');
+import { app, BrowserWindow, session } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import https from 'https';
+import contextMenu from 'electron-context-menu';
 
 const BUNDLE_URL = 'https://feur-inc.github.io/BetterX/desktop/bundle.js';
 
@@ -12,6 +13,26 @@ function getBetterXPath() {
 
 const betterXPath = getBetterXPath();
 const settingsPath = path.join(betterXPath, 'desktop.settings.json');
+
+contextMenu({
+  showLookUpSelection: true,
+  showSearchWithGoogle: true,
+  showCopyImage: true,
+  showCopyImageAddress: true,
+  showSaveImageAs: true,
+  showSaveLinkAs: true,
+  showInspectElement: true,
+  showServices: true,
+  prepend: (defaultActions, parameters, browserWindow) => [
+    {
+      label: 'Custom Action',
+      visible: parameters.selectionText.trim().length > 0,
+      click: () => {
+        console.log(`Custom action for: "${parameters.selectionText}"`);
+      }
+    }
+  ]
+});
 
 function ensureSettingsFile() {
   if (!fs.existsSync(betterXPath)) {
@@ -88,7 +109,9 @@ async function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
-    }
+    },
+    autoHideMenuBar: true, // This hides the menu bar by default
+    frame: true // Ensures the window still has a frame for the menu to appear in
   });
 
   win.loadURL('https://twitter.com');
