@@ -29,5 +29,3 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.send('update-response', response, checked);
   }
 });
-
-console.log('Preload script executed');

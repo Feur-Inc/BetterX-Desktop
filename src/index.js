@@ -219,11 +219,9 @@ function showUpdateModal(win, newHash) {
   const modalHtml = createUpdateModal(newHash);
   
   win.webContents.executeJavaScript(`
-    console.log('Injecting update modal');
     const modalContainer = document.createElement('div');
     modalContainer.innerHTML = ${JSON.stringify(modalHtml)};
     document.body.appendChild(modalContainer);
-    console.log('Update modal injected');
 
     function closeModal() {
       const modal = document.getElementById('betterx-update-modal');
