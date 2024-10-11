@@ -31,4 +31,4 @@ If you encounter any issues or have questions, please open an issue on our [GitH
 
 ## License
 
-BetterX Desktop is released under the [GNU General Public License 3.O](LICENSE).
+BetterX Desktop is released under the [GNU General Public License 3.0](LICENSE).
