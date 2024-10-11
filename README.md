@@ -16,7 +16,8 @@ Download the latest Windows installer: [BetterX-Desktop.Setup.1.0.0.exe](https:/
 Choose your preferred package format:
 - **AppImage**: [BetterX-Desktop-1.0.0.AppImage](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/alpha/BetterX-Desktop-1.0.0.AppImage)
 - **Snap**: [BetterX-Desktop_1.0.0_amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/alpha/BetterX-Desktop_1.0.0_amd64.snap)
-
+- **DEB**: [BetterX-Desktop_1.0.0_amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/alpha/betterx-desktop_1.0.0-alpha.1_amd64.deb)
+- **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-git](https://aur.archlinux.org/packages/betterx-desktop-git)
 ### macOS
 Feur.
 
