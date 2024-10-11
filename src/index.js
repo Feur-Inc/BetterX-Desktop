@@ -421,7 +421,8 @@ function createLoadingScreen() {
       nodeIntegration: true,
       contextIsolation: false
     },
-    skipTaskbar: true
+    skipTaskbar: true,
+    icon: path.join(__dirname, 'resources', 'betterX.ico')    
   });
 
   loadingScreen.loadFile('loading.html');
@@ -440,7 +441,8 @@ function createMainWindow() {
     },
     autoHideMenuBar: true,
     frame: true,
-    show: false
+    show: false,
+    icon: path.join(__dirname, 'resources', 'betterX.ico')    
   });
 
   mainWindow.loadURL('https://twitter.com');
