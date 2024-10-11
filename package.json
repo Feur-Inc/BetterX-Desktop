@@ -1,7 +1,7 @@
 {
   "name": "BetterX-Desktop",
   "version": "1.0.0-alpha.1",
-  "description": "Web app for BetterX",
+  "description": "Desktop application for BetterX, enhancing your browsing experience",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -9,11 +9,15 @@
     "app:dir": "electron-builder --dir",
     "build": "electron-builder build --win --linux",
     "build:win": "electron-builder build --win",
-    "build:linux": "electron-builder build --linux"
+    "build:linux": "electron-builder build --linux",
+    "build:arch": "electron-builder build --linux pacman"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["betterx", "desktop", "electron"],
+  "author": {
+    "name": "Mopigames",
+    "email": "mopigames@proton.me"
+  },
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
     "dmg-license": "^1.0.11",
@@ -27,6 +31,16 @@
     "appId": "com.feur-inc.betterx",
     "mac": {
       "category": "public.app-category.entertainment"
-    }
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "pacman"
+      ],
+      "category": "Entertainment",
+      "maintainer": "Mopigames <mopigames@proton.me>"
+    },
+    "electronVersion": "32.1.2"
   }
 }
