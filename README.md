@@ -61,7 +61,8 @@ BetterX offers a range of powerful features to customize and improve your X expe
 ### GifFavorites
 - Add your favorite GIFs for quick access
 - Create a personalized GIF collection
-
+  
+> [!IMPORTANT]  
 > Note: To see newly added GIFs in the "★ Favorites" category, refresh the page (CTRL + R). This limitation is due to how the platform updates content.
 
 ### MenuReorder
