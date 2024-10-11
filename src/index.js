@@ -500,8 +500,6 @@ async function createWindows() {
     } catch (error) {
       console.error('Error injecting BetterX or checking for updates:', error);
     }
-  
-    mainWindow.webContents.openDevTools();
   });
 }
 

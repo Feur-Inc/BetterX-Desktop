@@ -1,19 +1,32 @@
 {
   "name": "BetterX-Desktop",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.0-alpha.1",
+  "description": "Web app for BetterX",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "electron ./src/index.js"
+    "test": "electron ./src/index.js",
+    "app:dir": "electron-builder --dir",
+    "build": "electron-builder build --win --linux",
+    "build:win": "electron-builder build --win",
+    "build:linux": "electron-builder build --linux"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
-    "electron": "^32.1.2",
-    "electron-builder": "^25.1.7",
+    "dmg-license": "^1.0.11",
     "electron-context-menu": "^4.0.4"
+  },
+  "devDependencies": {
+    "electron": "^32.1.2",
+    "electron-builder": "^25.1.7"
+  },
+  "build": {
+    "appId": "com.feur-inc.betterx",
+    "mac": {
+      "category": "public.app-category.entertainment"
+    }
   }
 }
