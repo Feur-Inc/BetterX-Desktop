@@ -24,10 +24,6 @@ Feur.
 
 ## Screenshots
 
-### DMDrawerResizer in Action
-![DMDrawerResizer Feature](https://raw.githubusercontent.com/Feur-Inc/BetterX-Desktop/refs/heads/main/attachments/dmdrawer_resizer.png)
-
-*Description: The DMDrawerResizer feature allows users to adjust the size of the Direct Message drawer, as indicated by the yellow arrows showing horizontal and vertical resizing capabilities.*
 
 ### X Settings Integration
 ![X Settings Integration](https://raw.githubusercontent.com/Feur-Inc/BetterX-Desktop/refs/heads/main/attachments/x_settings_integration.png)
