@@ -1,0 +1,80 @@
+name: Build and Release BetterX Desktop
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: win
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install electron-builder
+        run: npm install electron-builder --save-dev
+
+      - name: Build Electron app
+        run: |
+          if [ "${{ matrix.platform }}" == "linux" ]; then
+            npm run build:linux
+          elif [ "${{ matrix.platform }}" == "win" ]; then
+            npm run build:win
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: BetterX-${{ matrix.platform }}
+          path: dist/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download artifacts from build
+        uses: actions/download-artifact@v3
+        with:
+          name: BetterX-linux
+          path: dist/linux
+        if: ${{ matrix.platform == 'linux' }}
+
+      - name: Download artifacts from build (Windows)
+        uses: actions/download-artifact@v3
+        with:
+          name: BetterX-win
+          path: dist/win
+        if: ${{ matrix.platform == 'win' }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/linux/*.deb
+            dist/linux/*.AppImage
+            dist/linux/*.snap
+            dist/win/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
