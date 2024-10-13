@@ -1,96 +1,95 @@
-name: Build and Release
+name: Build and Release BetterX Desktop
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [18.x]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Install system dependencies
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt-get update
-        sudo apt-get install -y wine64 wine32 snapcraft libarchive-tools
+      - name: Install dependencies
+        run: npm install
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
+      - name: Install Wine for Windows build
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y wine64 wine32
 
-    - name: Install project dependencies
-      run: pnpm install
+      - name: Install Snapcraft for Snap builds
+        run: sudo apt-get install -y snapcraft
 
-    - name: Build for Linux
-      run: pnpm run build:linux
+      - name: Build for Linux and Windows
+        run: |
+          npm run build:linux
+          npm run build:win
 
-    - name: Build for Windows
-      run: pnpm run build:win
+      - name: Package AppImage
+        run: |
+          npm run build:arch
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
-        draft: false
-        prerelease: false
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: BetterX Desktop v${{ github.run_number }}
+          draft: false
+          prerelease: false
 
-    - name: Upload Windows Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/BetterX-Desktop-Setup-1.0.1-alpha.exe
-        asset_name: BetterX-Desktop-Setup-1.0.1-alpha.exe
-        asset_content_type: application/vnd.microsoft.portable-executable
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Upload Linux (deb) artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/*.deb
+          asset_name: betterx-desktop-linux.deb
+          asset_content_type: application/x-debian-package
 
-    - name: Upload Linux DEB Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/betterx-desktop_1.0.1-alpha_amd64.deb
-        asset_name: betterx-desktop_1.0.1-alpha_amd64.deb
-        asset_content_type: application/vnd.debian.binary-package
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Upload Linux (AppImage) artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/*.AppImage
+          asset_name: betterx-desktop-linux.AppImage
+          asset_content_type: application/octet-stream
 
-    - name: Upload Linux RPM Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/betterx-desktop-1.0.1-alpha.x86_64.rpm
-        asset_name: betterx-desktop-1.0.1-alpha.x86_64.rpm
-        asset_content_type: application/x-rpm
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Upload Linux (Snap) artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/*.snap
+          asset_name: betterx-desktop-linux.snap
+          asset_content_type: application/x-snap
 
-    - name: Upload Linux AppImage Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/BetterX-Desktop-1.0.1-alpha.AppImage
-        asset_name: BetterX-Desktop-1.0.1-alpha.AppImage
-        asset_content_type: application/x-executable
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Upload Windows (exe) artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/*.exe
+          asset_name: betterx-desktop-windows.exe
+          asset_content_type: application/x-msdownload
