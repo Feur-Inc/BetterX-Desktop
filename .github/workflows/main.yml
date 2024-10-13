@@ -1,83 +1,79 @@
-name: Build and Release BetterX Desktop
+name: Build and Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            platform: linux
-          - os: windows-latest
-            platform: win
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'  # Use Node.js 20 to resolve EBADENGINE
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Wine (Linux only)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wine64
-
-      - name: Build Electron app
-        run: |
-          if [ "${{ matrix.platform }}" == "linux" ]; then
-            npm run build:linux
-          elif [ "${{ matrix.platform }}" == "win" ]; then
-            npm run build:win
-          fi
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: BetterX-${{ matrix.platform }}
-          path: dist/
-
-  release:
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Download artifacts from build
-        uses: actions/download-artifact@v3
-        with:
-          name: BetterX-linux
-          path: dist/linux
-        if: matrix.platform == 'linux'
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
 
-      - name: Download artifacts from build (Windows)
-        uses: actions/download-artifact@v3
-        with:
-          name: BetterX-win
-          path: dist/win
-        if: matrix.platform == 'win'
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wine64 snapcraft
+        npm install -g pnpm
+        pnpm install
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/linux/*.deb
-            dist/linux/*.AppImage
-            dist/linux/*.snap
-            dist/win/*.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build for Windows and Linux
+      run: |
+        pnpm run build
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/BetterX-Desktop-Setup-1.0.1-alpha.exe
+        asset_name: BetterX-Desktop-Setup-1.0.1-alpha.exe
+        asset_content_type: application/vnd.microsoft.portable-executable
+
+    - name: Upload Linux DEB Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop_1.0.1-alpha_amd64.deb
+        asset_name: betterx-desktop_1.0.1-alpha_amd64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+    - name: Upload Linux AppImage Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/BetterX-Desktop-1.0.1-alpha.AppImage
+        asset_name: BetterX-Desktop-1.0.1-alpha.AppImage
+        asset_content_type: application/x-executable
+
+    - name: Upload Linux Snap Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop_1.0.1-alpha_amd64.snap
+        asset_name: betterx-desktop_1.0.1-alpha_amd64.snap
+        asset_content_type: application/vnd.snap
