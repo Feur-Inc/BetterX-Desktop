@@ -1,4 +1,4 @@
-name: Build and Release BetterX Desktop
+name: Build and Release
 
 on:
   push:
@@ -7,89 +7,85 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted  # Use the TPM28 runner (which is on Debian 12)
-    strategy:
-      matrix:
-        os: [ubuntu-latest]  # Keep this to match node setup, but the actual runner is Debian 12
-        node-version: [18.x]
+    runs-on: [self-hosted, TPM28]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm ci
 
-      - name: Install Wine for Windows build (Debian 12)
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y wine64 wine32
+    - name: Install Wine
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y wine32
 
-      - name: Install Snapcraft for Snap builds (Debian 12)
-        run: sudo apt-get install -y snapcraft
+    - name: Build for Windows
+      run: npm run build:win
 
-      - name: Build for Linux and Windows
-        run: |
-          npm run build:linux
-          npm run build:win
+    - name: Build for Linux (deb)
+      run: npm run build -- --linux deb
 
-      - name: Package AppImage
-        run: |
-          npm run build:arch
+    - name: Build for Linux (AppImage)
+      run: npm run build -- --linux AppImage
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: BetterX Desktop v${{ github.run_number }}
-          draft: false
-          prerelease: false
+    - name: Build for Linux (snap)
+      run: npm run build -- --linux snap
 
-      - name: Upload Linux (deb) artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/*.deb
-          asset_name: betterx-desktop-linux.deb
-          asset_content_type: application/x-debian-package
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.ref }}
+        release_name: Release v${{ github.ref }}
+        draft: false
+        prerelease: false
 
-      - name: Upload Linux (AppImage) artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/*.AppImage
-          asset_name: betterx-desktop-linux.AppImage
-          asset_content_type: application/octet-stream
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop-${{ github.ref }}-win.exe
+        asset_name: betterx-desktop-${{ github.ref }}-win.exe
+        asset_content_type: application/exe
 
-      - name: Upload Linux (Snap) artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/*.snap
-          asset_name: betterx-desktop-linux.snap
-          asset_content_type: application/x-snap
+    - name: Upload Linux (deb) Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop-${{ github.ref }}-linux.deb
+        asset_name: betterx-desktop-${{ github.ref }}-linux.deb
+        asset_content_type: application/vnd.debian.binary-package
 
-      - name: Upload Windows (exe) artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/*.exe
-          asset_name: betterx-desktop-windows.exe
-          asset_content_type: application/x-msdownload
+    - name: Upload Linux (AppImage) Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop-${{ github.ref }}-linux.AppImage
+        asset_name: betterx-desktop-${{ github.ref }}-linux.AppImage
+        asset_content_type: application/octet-stream
+
+    - name: Upload Linux (snap) Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop-${{ github.ref }}-linux.snap
+        asset_name: betterx-desktop-${{ github.ref }}-linux.snap
+        asset_content_type: application/octet-stream
