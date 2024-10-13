@@ -7,10 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use the TPM28 runner (which is on Debian 12)
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest]  # Keep this to match node setup, but the actual runner is Debian 12
         node-version: [18.x]
 
     steps:
@@ -25,13 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Wine for Windows build
+      - name: Install Wine for Windows build (Debian 12)
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y wine64 wine32
 
-      - name: Install Snapcraft for Snap builds
+      - name: Install Snapcraft for Snap builds (Debian 12)
         run: sudo apt-get install -y snapcraft
 
       - name: Build for Linux and Windows
