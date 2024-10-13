@@ -36,6 +36,7 @@
       "target": [
         "deb",
         "rpm",
+        "snap",
         "AppImage"
       ],
       "category": "Entertainment",
