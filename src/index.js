@@ -1,4 +1,4 @@
-import { app, BrowserWindow, session, ipcMain } from 'electron';
+import { app, BrowserWindow, session, ipcMain, dialog, Tray, Menu, shell } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -13,6 +13,11 @@ const BUNDLE_URL = 'https://feur-inc.github.io/BetterX/desktop/bundle.js';
 
 const TEST_UPDATE_MODE = false; // Set this to true to test the update process
 console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE); // Debug log
+
+let mainWindow = null;
+let loadingScreen = null;
+let tray = null;
+let isQuitting = false;
 
 function getBetterXPath() {
   return path.join(app.getPath('appData'), 'BetterX');
@@ -343,7 +348,7 @@ async function ensureBundle(settings) {
     try {
       await downloadAndUpdateBundle(settings, await fetchBundleHash());
     } catch (error) {
-      console.error('Error ensuring bundle:', error.message);
+      console.error('Error ensuring bundle:', error);
       return null;
     }
   } else {
@@ -355,7 +360,7 @@ async function ensureBundle(settings) {
         console.log('Updated current hash:', settings.currentHash);
         saveSettings(settings);
       } catch (error) {
-        console.error('Error calculating hash for existing bundle:', error.message);
+        console.error('Error calculating hash for existing bundle:', error);
       }
     }
   }
@@ -364,6 +369,7 @@ async function ensureBundle(settings) {
 
 function handleUpdateResponse(response, checked, newHash) {
   const settings = loadSettings();
+  if (!settings) return;
   
   if (checked) {
     settings.disableUpdates = true;
@@ -398,15 +404,12 @@ function handleUpdateResponse(response, checked, newHash) {
       settings.ignoredVersion = newHash;
       saveSettings(settings);
       break;
-    case 'disable':
+      case 'disable':
       console.log('User disabled future updates');
       saveSettings(settings);
       break;
   }
 }
-
-let mainWindow = null;
-let loadingScreen = null;
 
 function createLoadingScreen() {
   loadingScreen = new BrowserWindow({
@@ -420,7 +423,7 @@ function createLoadingScreen() {
       contextIsolation: false
     },
     skipTaskbar: true,
-    icon: path.join(__dirname, 'resources', 'betterX.ico')    
+    icon: path.join(__dirname, 'resources', 'betterX.png')    
   });
 
   loadingScreen.loadFile('loading.html');
@@ -429,26 +432,207 @@ function createLoadingScreen() {
 }
 
 function createMainWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1300,
-    height: 690,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
-    },
-    autoHideMenuBar: true,
-    frame: true,
-    show: false,
-    icon: path.join(__dirname, 'resources', 'betterX.ico')    
-  });
+  if (!mainWindow) {
+    mainWindow = new BrowserWindow({
+      width: 1300,
+      height: 690,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js')
+      },
+      autoHideMenuBar: true,
+      show: false,
+      icon: path.join(__dirname, 'resources', 'betterX.png')    
+    });
 
-  mainWindow.loadURL('https://twitter.com');
+    mainWindow.loadURL('https://x.com');
+
+    const handleRedirect = (e, url) => {
+      if (!url.startsWith('https://x.com')) {
+        e.preventDefault();
+        shell.openExternal(url);
+      }
+    };
+
+    mainWindow.webContents.on('will-navigate', handleRedirect);
+    mainWindow.webContents.on('new-window', handleRedirect);
+
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+      if (!url.startsWith('https://x.com')) {
+        event.preventDefault();
+        shell.openExternal(url);
+      }
+    });
+
+    mainWindow.on('close', (event) => {
+      if (!isQuitting) {
+        event.preventDefault();
+        mainWindow.hide();
+      }
+      return false;
+    });
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+      if (!url.startsWith('https://x.com')) {
+        shell.openExternal(url);
+        return { action: 'deny' };
+      }
+      return { action: 'allow' };
+    });
+
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
+
+    initTray(mainWindow);
+  }
+  return mainWindow;
+}
+
+function initTray(win) {
+  const onTrayClick = () => {
+    if (win.isVisible()) win.hide();
+    else win.show();
+  };
+  
+  const trayMenu = Menu.buildFromTemplate([
+    {
+      label: "Open",
+      click() {
+        win.show();
+      }
+    },
+    {
+      label: "About",
+      click: showAboutDialog
+    },
+    {
+      label: "Reset BetterX",
+      click: () => resetBetterX(win)
+    },
+    {
+      label: "BetterX Desktop Settings",
+      click: openBetterXDesktopSettings
+    },
+    {
+      type: "separator"
+    },
+    {
+      label: "Restart",
+      click() {
+        app.relaunch();
+        app.quit();
+      }
+    },
+    {
+      label: "Quit",
+      click() {
+        isQuitting = true;
+        app.quit();
+      }
+    }
+  ]);
+
+  const iconPath = path.join(__dirname, "resources", "betterX.png");
+  if (!fs.existsSync(iconPath)) {
+    console.warn(`Tray icon not found at ${iconPath}. Using default icon.`);
+  }
+
+  tray = new Tray(iconPath);
+  tray.setToolTip("BetterX");
+  tray.setContextMenu(trayMenu);
+  tray.on("click", onTrayClick);
+}
+
+function showAboutDialog() {
+    const aboutWindow = new BrowserWindow({
+        width: 400,
+        height: 450,
+        resizable: false,
+        minimizable: false,
+        maximizable: false,
+        autoHideMenuBar: true,
+        icon: path.join(__dirname, 'resources', 'betterX.png'),
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        }
+    });
+
+    // Read the constants from the BetterX bundle
+    const bundlePath = path.join(getBetterXPath(), 'bundle.js');
+    let Devs = {};
+    try {
+        const bundle = fs.readFileSync(bundlePath, 'utf8');
+        const constMatch = bundle.match(/export const Devs = ({[\s\S]*?});/);
+        if (constMatch) {
+            eval(`Devs = ${constMatch[1]}`);
+        }
+    } catch (error) {
+        console.error('Error reading Devs from bundle:', error);
+    }
+
+    // Try to get the version from package.json
+    let version = '0.0.0';
+    try {
+        // Start from the current directory and move up until we find package.json
+        let currentDir = __dirname;
+        while (currentDir !== path.parse(currentDir).root) {
+            const packageJsonPath = path.join(currentDir, 'package.json');
+            if (fs.existsSync(packageJsonPath)) {
+                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+                version = packageJson.version || version;
+                break;
+            }
+            currentDir = path.dirname(currentDir);
+        }
+    } catch (error) {
+        console.error('Error reading version from package.json:', error);
+    }
+
+    // Load the about.html file
+    aboutWindow.loadFile(path.join(__dirname, 'about.html'));
+
+    // When the page has finished loading, send the Devs data and version
+    aboutWindow.webContents.on('did-finish-load', () => {
+        aboutWindow.webContents.send('update-about-info', { Devs, version });
+    });
+}
+
+function openBetterXDesktopSettings() {
+  // Implement opening BetterX Desktop settings here
+  console.log('BetterX Desktop Settings clicked');
+}
+
+async function resetBetterX(win) {
+  const { response } = await dialog.showMessageBox(win, {
+    message: "Are you sure you want to reset BetterX?",
+    detail: "This will delete all BetterX data and restart the application.",
+    buttons: ["Yes", "No"],
+    cancelId: 1,
+    defaultId: 0,
+    type: "warning"
+  });
+  
+  if (response === 1) return;
+
+  const betterXPath = getBetterXPath();
+  try {
+    await fs.promises.rm(betterXPath, { recursive: true, force: true });
+    console.log('BetterX directory deleted successfully');
+  } catch (error) {
+    console.error('Error deleting BetterX directory:', error);
+  }
+
+  app.relaunch();
+  app.quit();
 }
 
 async function createWindows() {
   createLoadingScreen();
-  createMainWindow();
+  const win = createMainWindow();
 
   const settings = loadSettings();
   if (!settings) {
@@ -472,30 +656,30 @@ async function createWindows() {
   }
 
   // Inject BetterX
-  mainWindow.webContents.on('did-finish-load', async () => {
+  win.webContents.on('did-finish-load', async () => {
     try {
-      await mainWindow.webContents.executeJavaScript(`
+      await win.webContents.executeJavaScript(`
         ${betterxJs}
         console.log('BetterX injected successfully');
         // Signal that BetterX is loaded
         window.postMessage({ type: 'BETTERX_LOADED' }, '*');
       `);
   
-      console.log('Checking update conditions...'); // Debug log
-      console.log('settings.disableUpdates:', settings.disableUpdates); // Debug log
-      console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE); // Debug log
+      console.log('Checking update conditions...');
+      console.log('settings.disableUpdates:', settings.disableUpdates);
+      console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);
 
       if (!settings.disableUpdates || TEST_UPDATE_MODE) {
-        console.log('Proceeding with update check...'); // Debug log
+        console.log('Proceeding with update check...');
         const updateInfo = await checkForUpdates(settings);
         if (updateInfo) {
-          console.log('Update available, showing modal...'); // Debug log
-          showUpdateModal(mainWindow, updateInfo.newHash);
+          console.log('Update available, showing modal...');
+          showUpdateModal(win, updateInfo.newHash);
         } else {
-          console.log('No update available or error occurred'); // Debug log
+          console.log('No update available or error occurred');
         }
       } else {
-        console.log('Updates are disabled or not in test mode'); // Debug log
+        console.log('Updates are disabled or not in test mode');
       }
     } catch (error) {
       console.error('Error injecting BetterX or checking for updates:', error);
@@ -546,17 +730,10 @@ app.whenReady().then(() => {
     console.error('Error creating windows:', error);
     app.quit();
   }
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindows();
-  });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('before-quit', () => {
+  isQuitting = true;
   ipcMain.removeAllListeners('LOADING_COMPLETE');
   ipcMain.removeAllListeners('update-response');
 });
@@ -573,6 +750,13 @@ ipcMain.on('LOADING_COMPLETE', () => {
 
 ipcMain.on('update-response', (event, response, checked, newHash) => {
   handleUpdateResponse(response, checked, newHash);
+});
+
+ipcMain.on('load-url', (event, url) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+      win.loadURL(url);
+  }
 });
 
 console.log('Main process started');

@@ -1,6 +1,6 @@
 {
   "name": "betterx-desktop",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.1-alpha",
   "homepage": "https://github.com/Feur-Inc/BetterX-Desktop",
   "description": "Desktop application for BetterX, enhancing your browsing experience",
   "main": "src/index.js",
@@ -21,7 +21,6 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
-    "dmg-license": "^1.0.11",
     "electron-context-menu": "^4.0.4"
   },
   "devDependencies": {
