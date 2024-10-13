@@ -3,26 +3,35 @@ name: Build and Release
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         sudo dpkg --add-architecture i386
         sudo apt-get update
-        sudo apt-get install -y wine64 wine32 snapcraft
-        npm install -g pnpm
-        pnpm install
+        sudo apt-get install -y wine64 wine32 snapcraft bsdtar
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+
+    - name: Install project dependencies
+      run: pnpm install
 
     - name: Build for Linux
       run: pnpm run build:linux
@@ -40,6 +49,7 @@ jobs:
         release_name: Release v${{ github.run_number }}
         draft: false
         prerelease: false
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     - name: Upload Windows Release Asset
       uses: actions/upload-release-asset@v1
@@ -50,6 +60,7 @@ jobs:
         asset_path: ./dist/BetterX-Desktop-Setup-1.0.1-alpha.exe
         asset_name: BetterX-Desktop-Setup-1.0.1-alpha.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     - name: Upload Linux DEB Release Asset
       uses: actions/upload-release-asset@v1
@@ -60,6 +71,18 @@ jobs:
         asset_path: ./dist/betterx-desktop_1.0.1-alpha_amd64.deb
         asset_name: betterx-desktop_1.0.1-alpha_amd64.deb
         asset_content_type: application/vnd.debian.binary-package
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    - name: Upload Linux RPM Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/betterx-desktop-1.0.1-alpha.x86_64.rpm
+        asset_name: betterx-desktop-1.0.1-alpha.x86_64.rpm
+        asset_content_type: application/x-rpm
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     - name: Upload Linux AppImage Release Asset
       uses: actions/upload-release-asset@v1
@@ -70,3 +93,4 @@ jobs:
         asset_path: ./dist/BetterX-Desktop-1.0.1-alpha.AppImage
         asset_name: BetterX-Desktop-1.0.1-alpha.AppImage
         asset_content_type: application/x-executable
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
