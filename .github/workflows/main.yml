@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, TPM28]
+    runs-on: [self-hosted]
 
     steps:
     - name: Checkout code
