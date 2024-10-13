@@ -7,8 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -25,13 +24,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'  # Use Node.js 20 to resolve EBADENGINE
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install electron-builder
-        run: npm install electron-builder --save-dev
+      - name: Install Wine (Linux only)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wine64
 
       - name: Build Electron app
         run: |
@@ -50,6 +52,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -59,14 +62,14 @@ jobs:
         with:
           name: BetterX-linux
           path: dist/linux
-        if: ${{ matrix.platform == 'linux' }}
+        if: matrix.platform == 'linux'
 
       - name: Download artifacts from build (Windows)
         uses: actions/download-artifact@v3
         with:
           name: BetterX-win
           path: dist/win
-        if: ${{ matrix.platform == 'win' }}
+        if: matrix.platform == 'win'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
