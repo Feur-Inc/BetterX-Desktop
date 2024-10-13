@@ -1,4 +1,4 @@
-import { app, BrowserWindow, session, ipcMain, dialog, Tray, Menu } from 'electron';
+import { app, BrowserWindow, session, ipcMain, dialog, Tray, Menu, shell } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -448,12 +448,31 @@ function createMainWindow() {
 
     mainWindow.loadURL('https://twitter.com');
 
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+      if (!url.startsWith('https://x.com')) {
+        event.preventDefault();
+        shell.openExternal(url);
+      }
+    });
+
     mainWindow.on('close', (event) => {
       if (!isQuitting) {
         event.preventDefault();
         mainWindow.hide();
       }
       return false;
+    });
+
+    mainWindow.webContents.on('did-finish-load', () => {
+      injectLinkHandler(mainWindow);
+    });
+
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+      if (!url.startsWith('https://x.com')) {
+        shell.openExternal(url);
+        return { action: 'deny' };
+      }
+      return { action: 'allow' };
     });
 
     mainWindow.on('closed', () => {
@@ -521,13 +540,75 @@ function initTray(win) {
 }
 
 function showAboutDialog() {
-  // Implement the about dialog here
-  console.log('About dialog clicked');
+    const aboutWindow = new BrowserWindow({
+        width: 400,
+        height: 450,
+        resizable: false,
+        minimizable: false,
+        maximizable: false,
+        autoHideMenuBar: true,
+        icon: path.join(__dirname, 'resources', 'betterX.png'),
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        }
+    });
+
+    // Read the constants from the BetterX bundle
+    const bundlePath = path.join(getBetterXPath(), 'bundle.js');
+    let Devs = {};
+    try {
+        const bundle = fs.readFileSync(bundlePath, 'utf8');
+        const constMatch = bundle.match(/export const Devs = ({[\s\S]*?});/);
+        if (constMatch) {
+            eval(`Devs = ${constMatch[1]}`);
+        }
+    } catch (error) {
+        console.error('Error reading Devs from bundle:', error);
+    }
+
+    // Try to get the version from package.json
+    let version = '0.0.0';
+    try {
+        // Start from the current directory and move up until we find package.json
+        let currentDir = __dirname;
+        while (currentDir !== path.parse(currentDir).root) {
+            const packageJsonPath = path.join(currentDir, 'package.json');
+            if (fs.existsSync(packageJsonPath)) {
+                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+                version = packageJson.version || version;
+                break;
+            }
+            currentDir = path.dirname(currentDir);
+        }
+    } catch (error) {
+        console.error('Error reading version from package.json:', error);
+    }
+
+    // Load the about.html file
+    aboutWindow.loadFile(path.join(__dirname, 'about.html'));
+
+    // When the page has finished loading, send the Devs data and version
+    aboutWindow.webContents.on('did-finish-load', () => {
+        aboutWindow.webContents.send('update-about-info', { Devs, version });
+    });
 }
 
 function openBetterXDesktopSettings() {
   // Implement opening BetterX Desktop settings here
   console.log('BetterX Desktop Settings clicked');
+}
+
+function injectLinkHandler(win) {
+  const linkHandlerPath = path.join(__dirname, 'linkHandler.js');
+  fs.readFile(linkHandlerPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading linkHandler.js:', err);
+      return;
+    }
+    win.webContents.executeJavaScript(data);
+  });
 }
 
 async function resetBetterX(win) {
@@ -588,6 +669,8 @@ async function createWindows() {
         // Signal that BetterX is loaded
         window.postMessage({ type: 'BETTERX_LOADED' }, '*');
       `);
+
+      injectLinkHandler(win);
   
       console.log('Checking update conditions...');
       console.log('settings.disableUpdates:', settings.disableUpdates);
@@ -674,6 +757,13 @@ ipcMain.on('LOADING_COMPLETE', () => {
 
 ipcMain.on('update-response', (event, response, checked, newHash) => {
   handleUpdateResponse(response, checked, newHash);
+});
+
+ipcMain.on('load-url', (event, url) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+      win.loadURL(url);
+  }
 });
 
 console.log('Main process started');
