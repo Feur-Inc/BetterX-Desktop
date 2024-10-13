@@ -446,7 +446,17 @@ function createMainWindow() {
       icon: path.join(__dirname, 'resources', 'betterX.png')    
     });
 
-    mainWindow.loadURL('https://twitter.com');
+    mainWindow.loadURL('https://x.com');
+
+    const handleRedirect = (e, url) => {
+      if (!url.startsWith('https://x.com')) {
+        e.preventDefault();
+        shell.openExternal(url);
+      }
+    };
+
+    mainWindow.webContents.on('will-navigate', handleRedirect);
+    mainWindow.webContents.on('new-window', handleRedirect);
 
     mainWindow.webContents.on('will-navigate', (event, url) => {
       if (!url.startsWith('https://x.com')) {
@@ -461,10 +471,6 @@ function createMainWindow() {
         mainWindow.hide();
       }
       return false;
-    });
-
-    mainWindow.webContents.on('did-finish-load', () => {
-      injectLinkHandler(mainWindow);
     });
 
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -600,17 +606,6 @@ function openBetterXDesktopSettings() {
   console.log('BetterX Desktop Settings clicked');
 }
 
-function injectLinkHandler(win) {
-  const linkHandlerPath = path.join(__dirname, 'linkHandler.js');
-  fs.readFile(linkHandlerPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading linkHandler.js:', err);
-      return;
-    }
-    win.webContents.executeJavaScript(data);
-  });
-}
-
 async function resetBetterX(win) {
   const { response } = await dialog.showMessageBox(win, {
     message: "Are you sure you want to reset BetterX?",
@@ -669,8 +664,6 @@ async function createWindows() {
         // Signal that BetterX is loaded
         window.postMessage({ type: 'BETTERX_LOADED' }, '*');
       `);
-
-      injectLinkHandler(win);
   
       console.log('Checking update conditions...');
       console.log('settings.disableUpdates:', settings.disableUpdates);

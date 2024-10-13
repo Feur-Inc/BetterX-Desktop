@@ -25,8 +25,8 @@ window.addEventListener('message', (event) => {
 
 // Expose necessary APIs to the renderer process
 contextBridge.exposeInMainWorld('electron', {
-  sendUpdateResponse: (response, checked) => {
-    ipcRenderer.send('update-response', response, checked);
+  sendUpdateResponse: (response, checked, newHash) => {
+    ipcRenderer.send('update-response', response, checked, newHash);
   },
   ipcRenderer: {
     on: (channel, func) => {
