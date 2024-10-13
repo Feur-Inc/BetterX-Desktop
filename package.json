@@ -36,7 +36,7 @@
       "target": [
         "deb",
         "rpm",
-        "pacman"
+        "AppImage"
       ],
       "category": "Entertainment",
       "maintainer": "Mopigames <mopigames@proton.me>"
