@@ -23,7 +23,7 @@ jobs:
       run: |
         sudo dpkg --add-architecture i386
         sudo apt-get update
-        sudo apt-get install -y wine64 wine32 snapcraft bsdtar
+        sudo apt-get install -y wine64 wine32 snapcraft libarchive-tools
 
     - name: Install pnpm
       uses: pnpm/action-setup@v2
