@@ -448,37 +448,12 @@ function createMainWindow() {
 
     mainWindow.loadURL('https://x.com');
 
-    const handleRedirect = (e, url) => {
-      if (!url.startsWith('https://x.com')) {
-        e.preventDefault();
-        shell.openExternal(url);
-      }
-    };
-
-    mainWindow.webContents.on('will-navigate', handleRedirect);
-    mainWindow.webContents.on('new-window', handleRedirect);
-
-    mainWindow.webContents.on('will-navigate', (event, url) => {
-      if (!url.startsWith('https://x.com')) {
-        event.preventDefault();
-        shell.openExternal(url);
-      }
-    });
-
     mainWindow.on('close', (event) => {
       if (!isQuitting) {
         event.preventDefault();
         mainWindow.hide();
       }
       return false;
-    });
-
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      if (!url.startsWith('https://x.com')) {
-        shell.openExternal(url);
-        return { action: 'deny' };
-      }
-      return { action: 'allow' };
     });
 
     mainWindow.on('closed', () => {
