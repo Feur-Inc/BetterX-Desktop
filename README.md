@@ -7,7 +7,7 @@ Enhance your X (formerly Twitter) experience with BetterX Desktop!
 ## Installation
 
 ### Windows
-Download the latest Windows installer: [BetterX-Desktop.Setup.1.0.0.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/alpha/BetterX-Desktop.Setup.1.0.0.exe)
+Download the latest Windows installer: [BetterX-Desktop.Setup.1.0.1.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop.Setup.1.0.1-alpha.exe)
 
 > [!WARNING]
 > The file might be flagged as a virus, but you can safely ignore this warning.
