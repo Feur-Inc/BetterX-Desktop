@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { showAboutDialog } from '../windows/aboutWindow.js';
+import { showSettingsWindow } from '../windows/settingsWindow.js';
 import { resetBetterX } from '../services/settingsService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +41,7 @@ export function initTray(win) {
     },
     {
       label: "BetterX Desktop Settings",
-      click: openBetterXDesktopSettings
+      click: showSettingsWindow
     },
     {
       type: "separator"
@@ -73,9 +74,4 @@ export function initTray(win) {
   tray.setToolTip("BetterX");
   tray.setContextMenu(trayMenu);
   tray.on("click", onTrayClick);
-}
-
-function openBetterXDesktopSettings() {
-  // Implement opening BetterX Desktop settings here
-  console.log('BetterX Desktop Settings clicked');
 }

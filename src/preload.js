@@ -23,6 +23,18 @@ window.addEventListener('message', (event) => {
     }
 });
 
+window.addEventListener('DOMContentLoaded', () => {
+  Object.defineProperty(document, 'title', {
+    set: function() {
+      // Do nothing to prevent title changes
+    },
+    get: function() {
+      return 'BetterX Desktop';
+    },
+    configurable: false
+  });
+});
+
 // Expose necessary APIs to the renderer process
 contextBridge.exposeInMainWorld('electron', {
   sendUpdateResponse: (response, checked, newHash) => {

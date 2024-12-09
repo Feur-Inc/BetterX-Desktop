@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { BETTERX_PATH } from '../config/constants.js';
+import { BETTERX_PATH, BUNDLE_PATH } from '../config/constants.js';
 import { downloadAndUpdateBundle, fetchBundleHash } from '../utils/updateUtils.js';
 import { calculateFileHash } from '../utils/fileUtils.js';
 import { saveSettings } from './settingsService.js';
@@ -8,7 +8,7 @@ import { saveSettings } from './settingsService.js';
 export async function ensureBundle(settings) {
     if (!settings.bundlePath) {
       console.log('Bundle path is not set in settings. Setting default path.');
-      settings.bundlePath = path.join(betterXPath, 'bundle.js');
+      settings.bundlePath = BUNDLE_PATH;
       saveSettings(settings);
     }
   

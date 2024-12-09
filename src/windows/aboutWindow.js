@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { BETTERX_PATH } from '../config/constants.js';
+import { BETTERX_PATH, BUNDLE_PATH } from '../config/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,10 +24,9 @@ export function showAboutDialog() {
     });
 
     // Read the constants from the BetterX bundle
-    const bundlePath = path.join(BETTERX_PATH, 'bundle.js');
     let Devs = {};
     try {
-        const bundle = fs.readFileSync(bundlePath, 'utf8');
+        const bundle = fs.readFileSync(BUNDLE_PATH, 'utf8');
         const constMatch = bundle.match(/export const Devs = ({[\s\S]*?});/);
         if (constMatch) {
             eval(`Devs = ${constMatch[1]}`);

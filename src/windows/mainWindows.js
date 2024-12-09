@@ -15,7 +15,7 @@ const TEST_UPDATE_MODE = false;
 let mainWindow = null;
 let loadingScreen = null;
 
-export function createMainWindow() {
+export function createMainWindow(settings) {
   if (!mainWindow) {
     mainWindow = new BrowserWindow({
       width: 1300,
@@ -26,18 +26,42 @@ export function createMainWindow() {
         preload: path.join(__dirname, '..', 'preload.js')
       },
       autoHideMenuBar: true,
-      show: false,
-      icon: path.join(__dirname, '..', 'resources', 'betterX.png')    
+      show: !settings.startMinimized, // Use startMinimized setting
+      icon: path.join(__dirname, '..', 'resources', 'betterX.png'),
+      title: 'BetterX Desktop'
+    });
+
+    // Prevent the window title from changing
+    mainWindow.webContents.on('page-title-updated', (event) => {
+      event.preventDefault();
     });
 
     mainWindow.loadURL('https://x.com');
 
+    // Inject script to prevent title changes
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow.webContents.executeJavaScript(`
+        Object.defineProperty(document, 'title', {
+          set: function() {},
+          get: function() {
+            return 'BetterX Desktop';
+          },
+          configurable: false
+        });
+        document.title = 'BetterX Desktop';
+      `);
+    });
+
     mainWindow.on('close', (event) => {
       if (!app.isQuitting) {
-        event.preventDefault();
-        mainWindow.hide();
+        if (settings.minimizeToTray) {
+          event.preventDefault();
+          mainWindow.hide();
+        } else {
+          mainWindow = null;
+          app.quit();
+        }
       }
-      return false;
     });
 
     mainWindow.on('closed', () => {
@@ -51,13 +75,13 @@ export function createMainWindow() {
 
 export async function createWindows() {
   loadingScreen = createLoadingScreen();
-  const win = createMainWindow();
-
   const settings = loadSettings();
   if (!settings) {
     console.error('Invalid settings');
     return;
   }
+
+  const win = createMainWindow(settings);
 
   const bundlePath = await ensureBundle(settings);
   if (!bundlePath) {
