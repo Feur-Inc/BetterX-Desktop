@@ -21,6 +21,12 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
+  // Add these lines near the start
+  app.name = 'BetterX';
+  if (process.platform === 'linux') {
+    app.commandLine.appendSwitch('--class', 'BetterX');
+  }
+
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     const mainWindow = getMainWindow();
     if (mainWindow) {

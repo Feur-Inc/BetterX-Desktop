@@ -30,8 +30,20 @@ export function createMainWindow(settings) {
       autoHideMenuBar: true,
       show: !settings.startMinimized, // Use startMinimized setting
       icon: path.join(__dirname, '..', 'resources', 'betterX.png'),
-      title: 'BetterX Desktop'
+      title: 'BetterX',
+      // Linux-specific window properties
+      name: 'BetterX'
     });
+
+    // Set Linux-specific properties
+    if (process.platform === 'linux') {
+      // Set the window class on Linux
+      mainWindow.setTitle('BetterX');
+      mainWindow.webContents.setWindowOpenHandler((details) => {
+        mainWindow.focus();
+        return { action: 'deny' };
+      });
+    }
 
     // Prevent the window title from changing
     mainWindow.webContents.on('page-title-updated', (event) => {
