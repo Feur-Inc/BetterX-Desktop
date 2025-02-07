@@ -2,10 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { app, dialog } from 'electron';
 import { ensureDirectoryExists } from '../utils/fileUtils.js';
-import { BETTERX_PATH } from '../config/constants.js';
+import { BETTERX_PATH, SETTINGS_PATH } from '../config/constants.js'; // Ajout de SETTINGS_PATH
 
-const appDataPath = app.getPath('userData');
-const settingsPath = path.join(appDataPath, 'desktop.settings.json');
+const settingsPath = SETTINGS_PATH;
 
 export function ensureSettingsFile() {
   const defaultSettings = {

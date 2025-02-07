@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { BUNDLE_URL, TEST_UPDATE_MODE, BETTERX_PATH } from '../config/constants.js';
 import { loadSettings, saveSettings } from '../services/settingsService.js';
 import { calculateFileHash } from './fileUtils.js';
-
+import { ensureDirectoryExists } from './fileUtils.js'; // Ajout de l'import
 
 export async function checkForUpdates(settings) {
     console.log('Checking for updates...');
@@ -51,7 +51,8 @@ export async function fetchBundleHash() {
 }
 
 export async function downloadAndUpdateBundle(settings, newHash) {
-    const tempBundlePath = path.join(betterXPath, 'temp_bundle.js');
+    ensureDirectoryExists(BETTERX_PATH); // S'assurer que le dossier BETTERX_PATH existe
+    const tempBundlePath = path.join(BETTERX_PATH, 'temp_bundle.js');
     
     try {
       console.log('Downloading bundle...');
