@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -97,6 +97,12 @@ export async function createWindows() {
     return;
   }
 
+  // Handle loading complete event
+  ipcMain.once('LOADING_COMPLETE', () => {
+    win.show();
+    closeLoadingScreen();
+  });
+
   // Inject BetterX
   win.webContents.on('did-finish-load', async () => {
     try {
@@ -124,11 +130,9 @@ export async function createWindows() {
         console.log('Updates are disabled or not in test mode');
       }
 
-      // Show main window and close loading screen
-      win.show();
-      closeLoadingScreen();
     } catch (error) {
       console.error('Error injecting BetterX or checking for updates:', error);
+      closeLoadingScreen();
     }
   });
 }
