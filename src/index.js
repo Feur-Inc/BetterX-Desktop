@@ -8,6 +8,7 @@ import { handleUpdateResponse } from './utils/updateUtils.js';
 import { TEST_UPDATE_MODE } from './config/constants.js';
 import { initTray, tray } from './tray/trayMenu.js';
 import { loadSettings, updateSetting } from './services/settingsService.js';
+import fetch from 'node-fetch';  // Add this import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,33 @@ if (!gotTheLock) {
 
   // Context menu setup (assuming it's the same as before)
   contextMenu();
+
+  // Update the fetch handler
+  ipcMain.handle('fetch-request', async (event, url, options) => {
+    try {
+      const headers = {
+        'User-Agent': 'BetterX Desktop',
+        ...options.headers
+      };
+
+      const response = await fetch(url, {
+        ...options,
+        headers
+      });
+      
+      const contentType = response.headers.get('content-type');
+      
+      // Auto-detect JSON responses
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      }
+      
+      return await response.text();
+    } catch (error) {
+      console.error('Main process fetch error:', error);
+      throw error;
+    }
+  });
 
   app.whenReady().then(() => {
     console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);

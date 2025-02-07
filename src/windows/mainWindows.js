@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { BrowserWindow, app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -18,11 +18,12 @@ let loadingScreen = null;
 export function createMainWindow(settings) {
   if (!mainWindow) {
     mainWindow = new BrowserWindow({
-      width: 1300,
-      height: 690,
+      width: 1280, // Updated from 1300
+      height: 720, // Updated from 690
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
+        sandbox: true, // Added from test code
         preload: path.join(__dirname, '..', 'preload.js')
       },
       autoHideMenuBar: true,
@@ -97,12 +98,6 @@ export async function createWindows() {
     return;
   }
 
-  // Handle loading complete event
-  ipcMain.once('LOADING_COMPLETE', () => {
-    win.show();
-    closeLoadingScreen();
-  });
-
   // Inject BetterX
   win.webContents.on('did-finish-load', async () => {
     try {
@@ -130,9 +125,11 @@ export async function createWindows() {
         console.log('Updates are disabled or not in test mode');
       }
 
+      // Show main window and close loading screen
+      win.show();
+      closeLoadingScreen();
     } catch (error) {
       console.error('Error injecting BetterX or checking for updates:', error);
-      closeLoadingScreen();
     }
   });
 }
