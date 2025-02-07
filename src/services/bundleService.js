@@ -5,7 +5,13 @@ import { downloadAndUpdateBundle, fetchBundleHash } from '../utils/updateUtils.j
 import { calculateFileHash } from '../utils/fileUtils.js';
 import { saveSettings } from './settingsService.js';
 
-export async function ensureBundle(settings) {
+let cachedBundlePath = null;
+
+export async function ensureBundle(settings, forceCheck = false) {
+    if (!forceCheck && cachedBundlePath) {
+        return cachedBundlePath;
+    }
+
     if (!settings.bundlePath) {
       console.log('Bundle path is not set in settings. Setting default path.');
       settings.bundlePath = BUNDLE_PATH;
@@ -33,5 +39,11 @@ export async function ensureBundle(settings) {
         }
       }
     }
+
+    cachedBundlePath = settings.bundlePath;
     return settings.bundlePath;
+}
+
+export function getCachedBundlePath() {
+    return cachedBundlePath;
 }

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { createLoadingScreen } from './loadingScreen.js';
 import { initTray } from '../tray/trayMenu.js';
 import { loadSettings } from '../services/settingsService.js';
-import { ensureBundle } from '../services/bundleService.js';
+import { ensureBundle, getCachedBundlePath } from '../services/bundleService.js';
 import { checkForUpdates, showUpdateModal } from '../utils/updateUtils.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,6 +14,7 @@ const TEST_UPDATE_MODE = false;
 
 let mainWindow = null;
 let loadingScreen = null;
+let isInitialLaunch = true;
 
 export function createMainWindow(settings) {
   if (!mainWindow) {
@@ -82,11 +83,17 @@ export async function createWindows() {
 
   const win = createMainWindow(settings);
 
+  // Do initial bundle check
+  if (isInitialLaunch) {
+    await ensureBundle(settings, true);
+    isInitialLaunch = false;
+  }
+
   // Inject BetterX on every page load
   const injectBetterX = async () => {
-    const bundlePath = await ensureBundle(settings);
+    const bundlePath = getCachedBundlePath();
     if (!bundlePath) {
-      console.error('Failed to ensure bundle');
+      console.error('No bundle path available');
       return;
     }
 
@@ -103,21 +110,13 @@ export async function createWindows() {
       await win.webContents.executeJavaScript(`
         ${betterxJs}
         console.log('BetterX injected successfully');
-        // Signal that BetterX is loaded
         window.postMessage({ type: 'BETTERX_LOADED' }, '*');
       `);
-
-      if (!settings.disableUpdates || TEST_UPDATE_MODE) {
-        const updateInfo = await checkForUpdates(settings);
-        if (updateInfo) {
-          showUpdateModal(win, updateInfo.newHash);
-        }
-      }
 
       win.show();
       closeLoadingScreen();
     } catch (error) {
-      console.error('Error injecting BetterX or checking for updates:', error);
+      console.error('Error injecting BetterX:', error);
     }
   };
 
