@@ -155,14 +155,13 @@ contextBridge.exposeInMainWorld('api', {
       const response = await ipcRenderer.invoke('fetch-request', url, {
         ...options,
         headers: {
-          'Accept': 'application/json',  // Add this to prefer JSON responses
+          'Accept': options.responseType === 'json' ? 'application/json' : '*/*',
           'x-requested-with': 'BetterX Desktop',
           'origin': 'https://x.com',
           ...(options.headers || {})
         }
       });
 
-      // Response is already parsed in the main process if it was JSON
       return response;
     } catch (error) {
       console.error('Fetch error:', error);

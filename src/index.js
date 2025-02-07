@@ -50,13 +50,27 @@ if (!gotTheLock) {
         headers
       });
       
-      const contentType = response.headers.get('content-type');
-      
-      // Auto-detect JSON responses
-      if (contentType && contentType.includes('application/json')) {
-        return await response.json();
+      // Check response type based on options or content-type
+      if (options.responseType === 'arrayBuffer') {
+        return await response.arrayBuffer();
+      } else if (options.responseType === 'blob') {
+        return await response.blob();
+      } else if (options.responseType === 'text' || options.text) {
+        return await response.text();
       }
       
+      const contentType = response.headers.get('content-type');
+      
+      // Auto-detect response type
+      if (contentType) {
+        if (contentType.includes('application/json')) {
+          return await response.json();
+        } else if (contentType.includes('text/')) {
+          return await response.text();
+        }
+      }
+      
+      // Default to text if no other type matches
       return await response.text();
     } catch (error) {
       console.error('Main process fetch error:', error);
