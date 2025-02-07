@@ -426,7 +426,7 @@ function createLoadingScreen() {
     icon: path.join(__dirname, 'resources', 'betterX.png')    
   });
 
-  loadingScreen.loadFile('loading.html');
+  loadingScreen.loadFile(path.join(__dirname, '..', 'loading.html'));
   loadingScreen.center();
   loadingScreen.show();
 }
