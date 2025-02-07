@@ -82,23 +82,23 @@ export async function createWindows() {
 
   const win = createMainWindow(settings);
 
-  const bundlePath = await ensureBundle(settings);
-  if (!bundlePath) {
-    console.error('Failed to ensure bundle');
-    return;
-  }
+  // Inject BetterX on every page load
+  const injectBetterX = async () => {
+    const bundlePath = await ensureBundle(settings);
+    if (!bundlePath) {
+      console.error('Failed to ensure bundle');
+      return;
+    }
 
-  // Read the BetterX bundle
-  let betterxJs;
-  try {
-    betterxJs = fs.readFileSync(bundlePath, 'utf8');
-  } catch (error) {
-    console.error('Unable to read BetterX bundle:', error);
-    return;
-  }
+    // Read the BetterX bundle
+    let betterxJs;
+    try {
+      betterxJs = fs.readFileSync(bundlePath, 'utf8');
+    } catch (error) {
+      console.error('Unable to read BetterX bundle:', error);
+      return;
+    }
 
-  // Inject BetterX
-  win.webContents.on('did-finish-load', async () => {
     try {
       await win.webContents.executeJavaScript(`
         ${betterxJs}
@@ -107,30 +107,22 @@ export async function createWindows() {
         window.postMessage({ type: 'BETTERX_LOADED' }, '*');
       `);
 
-      console.log('Checking update conditions...');
-      console.log('settings.disableUpdates:', settings.disableUpdates);
-      console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);
-
       if (!settings.disableUpdates || TEST_UPDATE_MODE) {
-        console.log('Proceeding with update check...');
         const updateInfo = await checkForUpdates(settings);
         if (updateInfo) {
-          console.log('Update available, showing modal...');
           showUpdateModal(win, updateInfo.newHash);
-        } else {
-          console.log('No update available or error occurred');
         }
-      } else {
-        console.log('Updates are disabled or not in test mode');
       }
 
-      // Show main window and close loading screen
       win.show();
       closeLoadingScreen();
     } catch (error) {
       console.error('Error injecting BetterX or checking for updates:', error);
     }
-  });
+  };
+
+  // Handle initial load and subsequent refreshes
+  win.webContents.on('did-finish-load', injectBetterX);
 }
 
 export function safeRelaunch() {
