@@ -80,15 +80,32 @@ if (!gotTheLock) {
     return loadSettings();
   });
 
-  ipcMain.on('update-setting', (event, key, value) => {
+  ipcMain.on('update-setting', async (event, key, value) => {
     const settings = updateSetting(key, value);
     
-    // Handle special cases
-    if (key === 'autoStart') {
-      app.setLoginItemSettings({
-        openAtLogin: value
-      });
+    // Handle runtime changes that need immediate effect
+    switch (key) {
+      case 'autoStart':
+        app.setLoginItemSettings({
+          openAtLogin: value,
+          path: process.execPath
+        });
+        break;
+      
+      case 'bundlePath':
+        // Validate the new bundle path
+        if (fs.existsSync(value)) {
+          await ensureBundle(settings);
+        } else {
+          dialog.showErrorBox('Invalid Path', 'The selected bundle path is invalid.');
+          // Revert to previous path
+          updateSetting('bundlePath', settings.bundlePath);
+        }
+        break;
     }
+
+    // Notify renderer of settings update
+    event.sender.send('settings-updated', settings);
   });
 
   ipcMain.handle('choose-bundle-path', async (event) => {

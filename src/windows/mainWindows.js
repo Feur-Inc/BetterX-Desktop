@@ -54,11 +54,10 @@ export function createMainWindow(settings) {
 
     mainWindow.on('close', (event) => {
       if (!app.isQuitting) {
+        event.preventDefault();
         if (settings.minimizeToTray) {
-          event.preventDefault();
           mainWindow.hide();
         } else {
-          mainWindow = null;
           app.quit();
         }
       }

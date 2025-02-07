@@ -2,20 +2,21 @@ import fs from 'fs';
 import path from 'path';
 import { app, dialog } from 'electron';
 import { ensureDirectoryExists } from '../utils/fileUtils.js';
+import { BETTERX_PATH } from '../config/constants.js';
 
 const appDataPath = app.getPath('userData');
 const settingsPath = path.join(appDataPath, 'desktop.settings.json');
 
 export function ensureSettingsFile() {
   const defaultSettings = {
-    bundlePath: "",
+    bundlePath: path.join(BETTERX_PATH, 'bundle.js'),
     disableUpdates: false,
     currentHash: "",
     skippedVersion: "",
     ignoredVersion: "",
     minimizeToTray: true,
     startMinimized: false,
-    autoStart: false
+    autoStart: app.getLoginItemSettings().openAtLogin
   };
 
   ensureDirectoryExists(path.dirname(settingsPath));
@@ -53,6 +54,15 @@ export function saveSettings(settings) {
 export function updateSetting(key, value) {
   const settings = loadSettings();
   settings[key] = value;
+
+  // Handle autoStart setting specially
+  if (key === 'autoStart') {
+    app.setLoginItemSettings({
+      openAtLogin: value,
+      path: process.execPath,
+    });
+  }
+
   saveSettings(settings);
   return settings;
 }

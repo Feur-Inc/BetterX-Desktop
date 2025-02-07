@@ -1,33 +1,47 @@
 const { ipcRenderer } = require('electron');
 
-// Load settings when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
     const settings = await ipcRenderer.invoke('get-settings');
     
-    // Initialize bundle path
-    document.getElementById('bundlePath').value = settings.bundlePath || '';
-    
-    // Initialize checkboxes with saved settings
-    document.getElementById('minimizeToTray').checked = settings.minimizeToTray;
-    document.getElementById('startMinimized').checked = settings.startMinimized;
-    document.getElementById('autoStart').checked = settings.autoStart;
-    document.getElementById('disableUpdates').checked = settings.disableUpdates;
+    // Initialize all settings with current values
+    Object.entries(settings).forEach(([key, value]) => {
+        const element = document.getElementById(key);
+        if (element) {
+            if (element.type === 'checkbox') {
+                element.checked = value;
+            } else {
+                element.value = value;
+            }
+        }
+    });
 
-    // Add event listeners for settings changes
-    const settingsElements = ['minimizeToTray', 'startMinimized', 'autoStart', 'disableUpdates'];
-    
-    settingsElements.forEach(settingId => {
-        document.getElementById(settingId).addEventListener('change', (event) => {
-            ipcRenderer.send('update-setting', settingId, event.target.checked);
+    // Add event listeners for all settings
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', (event) => {
+            ipcRenderer.send('update-setting', event.target.id, event.target.checked);
         });
     });
 
-    // Add bundle path chooser
+    // Handle bundle path updates
     document.getElementById('chooseBundlePath').addEventListener('click', async () => {
         const result = await ipcRenderer.invoke('choose-bundle-path');
         if (result.filePath) {
             document.getElementById('bundlePath').value = result.filePath;
             ipcRenderer.send('update-setting', 'bundlePath', result.filePath);
         }
+    });
+
+    // Listen for settings updates from main process
+    ipcRenderer.on('settings-updated', (event, newSettings) => {
+        Object.entries(newSettings).forEach(([key, value]) => {
+            const element = document.getElementById(key);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = value;
+                } else {
+                    element.value = value;
+                }
+            }
+        });
     });
 });
