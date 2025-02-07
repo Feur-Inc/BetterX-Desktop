@@ -6,7 +6,7 @@ import { createWindows, safeRelaunch, getMainWindow } from './windows/mainWindow
 import { setupSecurityPolicies } from './utils/securityUtils.js';
 import { handleUpdateResponse } from './utils/updateUtils.js';
 import { TEST_UPDATE_MODE } from './config/constants.js';
-import { initTray, tray } from './tray/trayMenu.js';
+import { initTray, destroyTray } from './tray/trayMenu.js';
 import { loadSettings, updateSetting } from './services/settingsService.js';
 import fetch from 'node-fetch';  // Add this import
 
@@ -90,19 +90,23 @@ if (!gotTheLock) {
     }
   });
 
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
+  app.on('window-all-closed', (event) => {
+    // Prevent default quit behavior
+    event.preventDefault();
   });
 
   app.on('before-quit', () => {
     isQuitting = true;
     app.isQuitting = true; // Set app.isQuitting
     ipcMain.removeAllListeners('update-response');
-    if (tray) {
-      tray.destroy();
-      tray = null;
+    destroyTray();
+  });
+
+  // Add this new handler
+  app.on('activate', () => {
+    const mainWindow = getMainWindow();
+    if (mainWindow) {
+      mainWindow.show();
     }
   });
 

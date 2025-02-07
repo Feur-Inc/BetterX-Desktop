@@ -9,7 +9,7 @@ import { resetBetterX } from '../services/settingsService.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export let tray = null;
+let tray = null;  // Change from const to let
 
 export function initTray(win) {
   const onTrayClick = () => {
@@ -60,7 +60,8 @@ export function initTray(win) {
     {
       label: "Quit",
       click() {
-        app.exit(0);
+        app.isQuitting = true;
+        app.quit();
       }
     }
   ]);
@@ -74,4 +75,15 @@ export function initTray(win) {
   tray.setToolTip("BetterX");
   tray.setContextMenu(trayMenu);
   tray.on("click", onTrayClick);
+}
+
+export function destroyTray() {
+    if (tray) {
+        tray.destroy();
+        tray = null;
+    }
+}
+
+export function getTray() {
+    return tray;
 }

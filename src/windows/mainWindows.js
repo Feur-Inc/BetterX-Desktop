@@ -54,14 +54,13 @@ export function createMainWindow(settings) {
     });
 
     mainWindow.on('close', (event) => {
+      // Only prevent close if we're not quitting and minimize to tray is enabled
       if (!app.isQuitting) {
         event.preventDefault();
-        if (settings.minimizeToTray) {
-          mainWindow.hide();
-        } else {
-          app.quit();
-        }
+        mainWindow.hide(); // Hide instead of close
+        return false;
       }
+      return true;
     });
 
     mainWindow.on('closed', () => {
