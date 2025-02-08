@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, shell } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -64,6 +64,27 @@ export function createMainWindow(settings) {
         });
         document.title = 'BetterX Desktop';
       `);
+    });
+
+    // Handle external links
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+      // Allow main twitter/x.com URLs to open in the app, but not help pages
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i) && 
+          !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+        return { action: 'allow' };
+      }
+      // Open help pages and other URLs in default browser
+      shell.openExternal(url);
+      return { action: 'deny' };
+    });
+
+    // Open clicked links in default browser
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+      if (!url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i) || 
+          url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+        event.preventDefault();
+        shell.openExternal(url);
+      }
     });
 
     mainWindow.on('close', (event) => {

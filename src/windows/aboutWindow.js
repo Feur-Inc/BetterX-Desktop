@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, shell, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -19,9 +19,26 @@ export function showAboutDialog() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            preload: path.join(__dirname, '..', 'preload.js')
+            preload: path.join(__dirname, '..', 'preload', 'aboutPreload.js')
         }
     });
+
+    // Define the handler function
+    const handleLinkClick = (event, url) => {
+        if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i)) {
+            const mainWindow = BrowserWindow.getAllWindows().find(w => w.title === 'BetterX');
+            if (mainWindow) {
+                mainWindow.loadURL(url);
+                mainWindow.focus();
+                aboutWindow.close();
+            }
+        } else {
+            shell.openExternal(url);
+        }
+    };
+
+    // Add the handler
+    ipcMain.on('about-link-click', handleLinkClick);
 
     // Read the constants from the BetterX bundle
     let Devs = {};
@@ -59,5 +76,10 @@ export function showAboutDialog() {
     // When the page has finished loading, send the Devs data and version
     aboutWindow.webContents.on('did-finish-load', () => {
         aboutWindow.webContents.send('update-about-info', { Devs, version });
+    });
+
+    // Clean up IPC listener when window is closed
+    aboutWindow.on('closed', () => {
+        ipcMain.removeListener('about-link-click', handleLinkClick);
     });
 }
