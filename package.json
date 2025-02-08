@@ -13,7 +13,11 @@
     "build:linux": "electron-builder build --linux",
     "build:arch": "electron-builder build --linux pacman"
   },
-  "keywords": ["betterx", "desktop", "electron"],
+  "keywords": [
+    "betterx",
+    "desktop",
+    "electron"
+  ],
   "author": {
     "name": "Mopigames",
     "email": "mopigames@proton.me"
@@ -25,7 +29,7 @@
     "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "electron": "^32.1.2",
+    "electron": "^32.3.0",
     "electron-builder": "^25.1.7"
   },
   "build": {
@@ -44,5 +48,10 @@
       "maintainer": "Mopigames <mopigames@proton.me>"
     },
     "electronVersion": "32.1.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron"
+    ]
   }
 }

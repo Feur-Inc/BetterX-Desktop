@@ -1,47 +1,47 @@
-const { ipcRenderer } = require('electron');
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const settings = await ipcRenderer.invoke('get-settings');
+window.addEventListener('DOMContentLoaded', async () => {
+    const settings = await window.electron.getSettings();
     
-    // Initialize all settings with current values
-    Object.entries(settings).forEach(([key, value]) => {
-        const element = document.getElementById(key);
-        if (element) {
-            if (element.type === 'checkbox') {
-                element.checked = value;
-            } else {
-                element.value = value;
+    // Initialize all checkboxes
+    const checkboxes = ['minimizeToTray', 'startMinimized', 'autoStart', 'disableUpdates'];
+    checkboxes.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+            checkbox.checked = settings[id];
+            checkbox.addEventListener('change', (e) => {
+                window.electron.updateSetting(id, e.target.checked);
+            });
+        }
+    });
+
+    // Initialize bundle path
+    const bundlePathInput = document.getElementById('bundlePath');
+    if (bundlePathInput) {
+        bundlePathInput.value = settings.bundlePath;
+    }
+
+    // Handle bundle path selection
+    const chooseBundleBtn = document.getElementById('chooseBundlePath');
+    if (chooseBundleBtn) {
+        chooseBundleBtn.addEventListener('click', async () => {
+            const result = await window.electron.chooseBundlePath();
+            if (result.filePath) {
+                bundlePathInput.value = result.filePath;
+                window.electron.updateSetting('bundlePath', result.filePath);
             }
-        }
-    });
-
-    // Add event listeners for all settings
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', (event) => {
-            ipcRenderer.send('update-setting', event.target.id, event.target.checked);
         });
-    });
-
-    // Handle bundle path updates
-    document.getElementById('chooseBundlePath').addEventListener('click', async () => {
-        const result = await ipcRenderer.invoke('choose-bundle-path');
-        if (result.filePath) {
-            document.getElementById('bundlePath').value = result.filePath;
-            ipcRenderer.send('update-setting', 'bundlePath', result.filePath);
-        }
-    });
+    }
 
     // Listen for settings updates from main process
-    ipcRenderer.on('settings-updated', (event, newSettings) => {
-        Object.entries(newSettings).forEach(([key, value]) => {
-            const element = document.getElementById(key);
-            if (element) {
-                if (element.type === 'checkbox') {
-                    element.checked = value;
-                } else {
-                    element.value = value;
-                }
+    window.electron.onSettingsUpdate((newSettings) => {
+        checkboxes.forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = newSettings[id];
             }
         });
+        
+        if (bundlePathInput) {
+            bundlePathInput.value = newSettings.bundlePath;
+        }
     });
 });

@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 export function showSettingsWindow() {
     const settingsWindow = new BrowserWindow({
         width: 500,
-        height: 600,
+        height: 670,
         resizable: false,
         minimizable: false,
         maximizable: false,
@@ -18,7 +18,7 @@ export function showSettingsWindow() {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, '..', 'preload.js')
         }
     });
 

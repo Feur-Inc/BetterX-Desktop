@@ -1,10 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { app, dialog } from 'electron';
-import { ensureDirectoryExists } from '../utils/fileUtils.js';
-import { BETTERX_PATH, SETTINGS_PATH } from '../config/constants.js'; // Ajout de SETTINGS_PATH
-
-const settingsPath = SETTINGS_PATH;
+import { BETTERX_PATH, SETTINGS_PATH } from '../config/constants.js';
 
 export function ensureSettingsFile() {
   const defaultSettings = {
@@ -18,50 +15,43 @@ export function ensureSettingsFile() {
     autoStart: app.getLoginItemSettings().openAtLogin
   };
 
-  ensureDirectoryExists(path.dirname(settingsPath));
-
-  if (!fs.existsSync(settingsPath)) {
-    fs.writeFileSync(settingsPath, JSON.stringify(defaultSettings, null, 2));
-  } else {
-    try {
-      const settingsData = fs.readFileSync(settingsPath, 'utf8');
-      JSON.parse(settingsData);
-    } catch (error) {
-      console.error('Invalid settings file detected:', error);
-      fs.writeFileSync(settingsPath, JSON.stringify(defaultSettings, null, 2));
-    }
+  if (!fs.existsSync(BETTERX_PATH)) {
+    fs.mkdirSync(BETTERX_PATH, { recursive: true });
   }
+
+  if (!fs.existsSync(SETTINGS_PATH)) {
+    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(defaultSettings, null, 2));
+  }
+
+  return defaultSettings;
 }
 
 export function loadSettings() {
-  ensureSettingsFile();
   try {
-    const settingsData = fs.readFileSync(settingsPath, 'utf8');
-    const settings = JSON.parse(settingsData);
+    if (!fs.existsSync(SETTINGS_PATH)) {
+      return ensureSettingsFile();
+    }
+    const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
     return settings;
   } catch (error) {
     console.error('Error loading settings:', error);
-    return null;
+    return ensureSettingsFile();
   }
 }
 
 export function saveSettings(settings) {
-  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-  console.log('Saved settings:', settings); // Debug log
+  try {
+    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    return false;
+  }
 }
 
 export function updateSetting(key, value) {
   const settings = loadSettings();
   settings[key] = value;
-
-  // Handle autoStart setting specially
-  if (key === 'autoStart') {
-    app.setLoginItemSettings({
-      openAtLogin: value,
-      path: process.execPath,
-    });
-  }
-
   saveSettings(settings);
   return settings;
 }

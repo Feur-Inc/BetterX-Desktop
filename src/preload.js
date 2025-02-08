@@ -68,7 +68,11 @@ contextBridge.exposeInMainWorld('electron', {
   },
   openExternal: (url) => {
     shell.openExternal(url);
-  }
+  },
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  updateSetting: (key, value) => ipcRenderer.send('update-setting', key, value),
+  chooseBundlePath: () => ipcRenderer.invoke('choose-bundle-path'),
+  onSettingsUpdate: (callback) => ipcRenderer.on('settings-updated', (_, settings) => callback(settings))
 });
 
 // Add BetterX functionality

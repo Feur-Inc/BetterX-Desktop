@@ -9,6 +9,8 @@ import { TEST_UPDATE_MODE } from './config/constants.js';
 import { initTray, destroyTray } from './tray/trayMenu.js';
 import { loadSettings, updateSetting } from './services/settingsService.js';
 import fetch from 'node-fetch';  // Add this import
+import fs from 'fs'; // Ajouté pour éviter l'erreur "fs is not defined"
+import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -163,8 +165,11 @@ if (!gotTheLock) {
   ipcMain.handle('choose-bundle-path', async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     const result = await dialog.showOpenDialog(win, {
-      properties: ['openDirectory'],
-      title: 'Choose BetterX Bundle Directory'
+        properties: ['openFile'],
+        title: 'Choose BetterX Bundle File',
+        filters: [
+            { name: 'JavaScript Files', extensions: ['js'] }
+        ]
     });
     return { filePath: result.filePaths[0] };
   });
