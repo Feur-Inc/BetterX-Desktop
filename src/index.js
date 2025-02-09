@@ -1,4 +1,4 @@
-import { app, session, ipcMain, BrowserWindow, dialog } from 'electron';
+import { app, session, ipcMain, BrowserWindow, dialog, desktopCapturer, clipboard, nativeImage } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import contextMenu from 'electron-context-menu';
@@ -23,6 +23,9 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
+  // Ajouter ces lignes pour supprimer les messages d'erreur Autofill
+  app.commandLine.appendSwitch('disable-features', 'AutofillServerCommunication');
+
   // Add these lines near the start
   app.name = 'BetterX';
   if (process.platform === 'linux') {
@@ -82,6 +85,42 @@ if (!gotTheLock) {
       return await response.text();
     } catch (error) {
       console.error('Main process fetch error:', error);
+      throw error;
+    }
+  });
+
+  // Add this before app.whenReady()
+  ipcMain.handle('capture-element', async (event, bounds) => {
+    try {
+      const { x, y, width, height } = bounds;
+      const mainWindow = getMainWindow();
+      const zoomFactor = await mainWindow.webContents.getZoomFactor();
+      
+      // Convertir les coordonnées en pixels d'appareil
+      const rect = {
+        x: Math.round(x * zoomFactor),
+        y: Math.round(y * zoomFactor),
+        width: Math.round(width * zoomFactor),
+        height: Math.round(height * zoomFactor)
+      };
+
+      // Utiliser capturePage pour obtenir directement l'image de la zone demandée
+      const image = await mainWindow.capturePage(rect);
+      return image.toPNG();
+    } catch (error) {
+      console.error('Capture error:', error);
+      throw error;
+    }
+  });
+
+  // Ajouter avant app.whenReady()
+  ipcMain.handle('copy-to-clipboard', async (event, imageBuffer) => {
+    try {
+      const image = nativeImage.createFromBuffer(imageBuffer);
+      clipboard.writeImage(image);
+      return true;
+    } catch (error) {
+      console.error('Clipboard error:', error);
       throw error;
     }
   });

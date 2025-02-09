@@ -187,5 +187,36 @@ contextBridge.exposeInMainWorld('api', {
       console.error('Fetch error:', error);
       throw error;
     }
+  },
+  
+  // Add the capture function
+  captureElement: async (element) => {
+    // Get element bounds relative to the viewport
+    const rect = element.getBoundingClientRect();
+    
+    // Calculate the actual content bounds without scrollbar
+    const style = window.getComputedStyle(element);
+    const paddingLeft = parseFloat(style.paddingLeft);
+    const paddingRight = parseFloat(style.paddingRight);
+    const paddingTop = parseFloat(style.paddingTop);
+    const paddingBottom = parseFloat(style.paddingBottom);
+    
+    const bounds = {
+      x: rect.x + paddingLeft,
+      y: rect.y + paddingTop,
+      width: rect.width - (paddingLeft + paddingRight),
+      height: rect.height - (paddingTop + paddingBottom),
+      // Add scroll position to capture full content
+      scrollTop: element.scrollTop,
+      scrollLeft: element.scrollLeft
+    };
+
+    // Call main process to capture
+    const buffer = await ipcRenderer.invoke('capture-element', bounds);
+    return buffer;
+  },
+  
+  copyImageToClipboard: async (imageBuffer) => {
+    return ipcRenderer.invoke('copy-to-clipboard', imageBuffer);
   }
 });
