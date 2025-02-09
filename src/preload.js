@@ -156,7 +156,6 @@ contextBridge.exposeInMainWorld('betterX', {
 contextBridge.exposeInMainWorld('api', {
   fetch: async (url, options = {}) => {
     try {
-      // Create a response-like object that mimics the Fetch API
       const rawResponse = await ipcRenderer.invoke('fetch-request', url, {
         ...options,
         headers: {
@@ -167,21 +166,23 @@ contextBridge.exposeInMainWorld('api', {
         }
       });
 
-      // Return a Response-like object with common methods
       return {
         text: async () => rawResponse,
         json: async () => {
           try {
+            if (typeof rawResponse === 'string' && rawResponse.trim().startsWith("HTTP")) {
+              // La réponse n'est pas en JSON : renvoyer le texte
+              return rawResponse;
+            }
             return typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
           } catch (e) {
-            throw new Error('Failed to parse JSON response');
+            throw new Error('Failed to parse JSON response: ' + e.message);
           }
         },
-        // Add other response methods as needed
         ok: true,
         status: 200,
         headers: new Headers(options.headers || {}),
-        rawResponse // Keep the raw response accessible
+        rawResponse
       };
     } catch (error) {
       console.error('Fetch error:', error);
