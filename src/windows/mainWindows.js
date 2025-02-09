@@ -21,6 +21,7 @@ export function createMainWindow(settings) {
     mainWindow = new BrowserWindow({
       width: 1280, // Updated from 1300
       height: 720, // Updated from 690
+      transparent: settings.enableTransparency,
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,

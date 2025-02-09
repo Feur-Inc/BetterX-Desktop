@@ -12,7 +12,8 @@ export function ensureSettingsFile() {
     ignoredVersion: "",
     minimizeToTray: true,
     startMinimized: false,
-    autoStart: app.getLoginItemSettings().openAtLogin
+    autoStart: app.getLoginItemSettings().openAtLogin,
+    enableTransparency: false
   };
 
   if (!fs.existsSync(BETTERX_PATH)) {
