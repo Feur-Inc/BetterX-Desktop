@@ -227,5 +227,7 @@ contextBridge.exposeInMainWorld('api', {
     read: (filename) => ipcRenderer.invoke('themes-read', filename),
     write: (filename, content) => ipcRenderer.invoke('themes-write', filename, content),
     delete: (filename) => ipcRenderer.invoke('themes-delete', filename)
-  }
+  },
+  
+  openSettings: () => ipcRenderer.invoke('open-settings')
 });

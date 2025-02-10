@@ -12,6 +12,7 @@ import fetch from 'node-fetch';  // Add this import
 import fs from 'fs'; // Ajouté pour éviter l'erreur "fs is not defined"
 import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
 import fsPromises from 'fs/promises';
+import { showSettingsWindow } from './windows/settingsWindow.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -124,6 +125,11 @@ if (!gotTheLock) {
       console.error('Clipboard error:', error);
       throw error;
     }
+  });
+
+  // Add this with the other IPC handlers
+  ipcMain.handle('open-settings', () => {
+    showSettingsWindow();
   });
 
   app.whenReady().then(async () => {
