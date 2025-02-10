@@ -27,7 +27,6 @@ export async function ensureBundle(settings, forceCheck = false) {
         return null;
       }
     } else {
-      console.log('Bundle already exists at:', settings.bundlePath);
       if (!settings.currentHash) {
         console.log('Current hash is empty. Calculating hash for existing bundle...');
         try {

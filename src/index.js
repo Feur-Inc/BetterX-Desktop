@@ -5,12 +5,13 @@ import contextMenu from 'electron-context-menu';
 import { createWindows, safeRelaunch, getMainWindow } from './windows/mainWindows.js';
 import { setupSecurityPolicies } from './utils/securityUtils.js';
 import { handleUpdateResponse } from './utils/updateUtils.js';
-import { TEST_UPDATE_MODE } from './config/constants.js';
+import { TEST_UPDATE_MODE, THEME_PATH } from './config/constants.js';
 import { initTray, destroyTray } from './tray/trayMenu.js';
 import { loadSettings, updateSetting } from './services/settingsService.js';
 import fetch from 'node-fetch';  // Add this import
 import fs from 'fs'; // Ajouté pour éviter l'erreur "fs is not defined"
 import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
+import fsPromises from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,8 +101,7 @@ if (!gotTheLock) {
       const rect = {
         x: Math.round(x * zoomFactor),
         y: Math.round(y * zoomFactor),
-        width: Math.round(width * zoomFactor),
-        height: Math.round(height * zoomFactor)
+        width: Math.round(width * zoomFactor)
       };
 
       // Utiliser capturePage pour obtenir directement l'image de la zone demandée
@@ -125,7 +125,7 @@ if (!gotTheLock) {
     }
   });
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
     console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);
     setupSecurityPolicies();
     
@@ -134,6 +134,13 @@ if (!gotTheLock) {
     } catch (error) {
       console.error('Error creating windows:', error);
       app.quit();
+    }
+
+    // Créer le dossier themes s'il n'existe pas
+    try {
+      await fsPromises.mkdir(THEME_PATH, { recursive: true });
+    } catch (error) {
+      console.error('Error creating themes directory:', error);
     }
   });
 
@@ -211,6 +218,49 @@ if (!gotTheLock) {
         ]
     });
     return { filePath: result.filePaths[0] };
+  });
+
+  // Ajout des handlers pour les thèmes
+  ipcMain.handle('themes-list', async () => {
+    try {
+      const files = await fsPromises.readdir(THEME_PATH);
+      return files.filter(file => file.endsWith('.css'));
+    } catch (error) {
+      console.error('Error listing themes:', error);
+      return [];
+    }
+  });
+
+  ipcMain.handle('themes-read', async (event, filename) => {
+    try {
+      const filePath = path.join(THEME_PATH, filename);
+      return await fsPromises.readFile(filePath, 'utf-8');
+    } catch (error) {
+      console.error('Error reading theme:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('themes-write', async (event, filename, content) => {
+    try {
+      const filePath = path.join(THEME_PATH, filename);
+      await fsPromises.writeFile(filePath, content, 'utf-8');
+      return true;
+    } catch (error) {
+      console.error('Error writing theme:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('themes-delete', async (event, filename) => {
+    try {
+      const filePath = path.join(THEME_PATH, filename);
+      await fsPromises.unlink(filePath);
+      return true;
+    } catch (error) {
+      console.error('Error deleting theme:', error);
+      throw error;
+    }
   });
 }
 

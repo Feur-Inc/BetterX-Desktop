@@ -219,5 +219,13 @@ contextBridge.exposeInMainWorld('api', {
   
   copyImageToClipboard: async (imageBuffer) => {
     return ipcRenderer.invoke('copy-to-clipboard', imageBuffer);
+  },
+  
+  // Ajout de l'API themes
+  themes: {
+    list: () => ipcRenderer.invoke('themes-list'),
+    read: (filename) => ipcRenderer.invoke('themes-read', filename),
+    write: (filename, content) => ipcRenderer.invoke('themes-write', filename, content),
+    delete: (filename) => ipcRenderer.invoke('themes-delete', filename)
   }
 });
