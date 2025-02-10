@@ -11,6 +11,7 @@ import { loadSettings, updateSetting } from './services/settingsService.js';
 import fetch from 'node-fetch';  // Add this import
 import fs from 'fs'; // Ajouté pour éviter l'erreur "fs is not defined"
 import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
+import { getVersion } from './utils/versionUtils.js';  // Add this import at the top with other imports
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -123,6 +124,11 @@ if (!gotTheLock) {
       console.error('Clipboard error:', error);
       throw error;
     }
+  });
+
+  // Add this handler before app.whenReady()
+  ipcMain.handle('get-version', () => {
+    return getVersion();
   });
 
   app.whenReady().then(() => {

@@ -76,7 +76,9 @@ contextBridge.exposeInMainWorld('electron', {
 });
 
 // Add BetterX functionality
-contextBridge.exposeInMainWorld('betterX', {
+contextBridge.exposeInMainWorld('BetterX', {
+  // Fix getDesktopVersion implementation
+  getDesktopVersion: () => ipcRenderer.invoke('get-version'),  // Remove async/await here
   injectImage: (imageUrl, targetSelector) => {
       const target = document.querySelector(targetSelector);
       if (target) {
