@@ -101,7 +101,8 @@ if (!gotTheLock) {
       const rect = {
         x: Math.round(x * zoomFactor),
         y: Math.round(y * zoomFactor),
-        width: Math.round(width * zoomFactor)
+        width: Math.round(width * zoomFactor),
+        height: Math.round(height * zoomFactor) // réintégrer height pour limiter la zone capturée
       };
 
       // Utiliser capturePage pour obtenir directement l'image de la zone demandée
