@@ -226,7 +226,10 @@ contextBridge.exposeInMainWorld('api', {
     list: () => ipcRenderer.invoke('themes-list'),
     read: (filename) => ipcRenderer.invoke('themes-read', filename),
     write: (filename, content) => ipcRenderer.invoke('themes-write', filename, content),
-    delete: (filename) => ipcRenderer.invoke('themes-delete', filename)
+    delete: (filename) => ipcRenderer.invoke('themes-delete', filename),
+    onThemeFileChanged: (callback) => {
+      ipcRenderer.on('theme-file-changed', (_, filename, content) => callback(filename, content));
+    }
   },
   
   openSettings: () => ipcRenderer.invoke('open-settings')

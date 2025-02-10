@@ -13,6 +13,7 @@ import fs from 'fs'; // Ajouté pour éviter l'erreur "fs is not defined"
 import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
 import fsPromises from 'fs/promises';
 import { showSettingsWindow } from './windows/settingsWindow.js';
+import { watch } from 'fs'; // Add this import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -149,6 +150,21 @@ if (!gotTheLock) {
     } catch (error) {
       console.error('Error creating themes directory:', error);
     }
+
+    // Set up theme file watcher
+    watch(THEME_PATH, async (eventType, filename) => {
+      if (filename && filename.endsWith('.css')) {
+        try {
+          const content = await fsPromises.readFile(path.join(THEME_PATH, filename), 'utf-8');
+          // Notify all windows about the theme change
+          BrowserWindow.getAllWindows().forEach(window => {
+            window.webContents.send('theme-file-changed', filename, content);
+          });
+        } catch (error) {
+          console.error('Error reading changed theme file:', error);
+        }
+      }
+    });
   });
 
   app.on('window-all-closed', (event) => {
