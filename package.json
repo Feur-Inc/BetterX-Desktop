@@ -1,6 +1,6 @@
 {
   "name": "betterx-desktop",
-  "version": "1.0.2-alpha",
+  "version": "2.0.0-beta",
   "homepage": "https://github.com/Feur-Inc/BetterX-Desktop",
   "description": "Desktop application for BetterX, enhancing your browsing experience",
   "main": "src/index.js",
