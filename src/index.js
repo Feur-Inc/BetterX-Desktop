@@ -14,6 +14,7 @@ import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
 import fsPromises from 'fs/promises';
 import { showSettingsWindow } from './windows/settingsWindow.js';
 import { watch } from 'fs'; // Add this import
+import { getVersion } from './utils/versionUtils.js';  // Add this import at the top with other imports
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,6 +127,11 @@ if (!gotTheLock) {
       console.error('Clipboard error:', error);
       throw error;
     }
+  });
+
+  // Add this handler before app.whenReady()
+  ipcMain.handle('get-version', () => {
+    return getVersion();
   });
 
   // Add this with the other IPC handlers
