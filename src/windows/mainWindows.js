@@ -51,7 +51,7 @@ export function createMainWindow(settings) {
       event.preventDefault();
     });
 
-    mainWindow.loadURL('https://x.com');
+    mainWindow.loadURL('https://x.com/login');
 
     // Inject script to prevent title changes
     mainWindow.webContents.on('did-finish-load', () => {
@@ -66,13 +66,12 @@ export function createMainWindow(settings) {
         document.title = 'BetterX Desktop';
       `);
     });
-
     // Handle external links
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      // Allow main twitter/x.com URLs to open in the app, but not help pages
-      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i) && 
-          !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
-        return { action: 'allow' };
+      // Allow main twitter/x.com URLs and login URLs to open in the app
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|accounts\.google\.com|appleid\.apple\.com)/i) && 
+        !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+      return { action: 'allow' };
       }
       // Open help pages and other URLs in default browser
       shell.openExternal(url);
@@ -81,10 +80,10 @@ export function createMainWindow(settings) {
 
     // Open clicked links in default browser
     mainWindow.webContents.on('will-navigate', (event, url) => {
-      if (!url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i) || 
-          url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
-        event.preventDefault();
-        shell.openExternal(url);
+      if (!url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|accounts\.google\.com|appleid\.apple\.com)/i) || 
+        url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+      event.preventDefault();
+      shell.openExternal(url);
       }
     });
 
