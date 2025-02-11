@@ -5,7 +5,7 @@ import { BETTERX_PATH, SETTINGS_PATH } from '../config/constants.js';
 
 export function ensureSettingsFile() {
   const defaultSettings = {
-    bundlePath: path.join(BETTERX_PATH, 'bundle.js'),
+    bundlePath: path.join(BETTERX_PATH, 'main.bundle.js'),
     disableUpdates: false,
     currentHash: "",
     skippedVersion: "",
