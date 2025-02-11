@@ -5,7 +5,7 @@ import { BETTERX_PATH, SETTINGS_PATH } from '../config/constants.js';
 
 export function ensureSettingsFile() {
   const defaultSettings = {
-    bundlePath: path.join(BETTERX_PATH, 'main.bundle.js'),
+    bundlePath: path.join(BETTERX_PATH, 'bundle.js'),
     disableUpdates: false,
     currentHash: "",
     skippedVersion: "",
@@ -70,13 +70,18 @@ export async function resetBetterX(win) {
     
     if (response === 1) return; // User clicked "No"
 
-    await fs.rm(BETTERX_PATH, { recursive: true, force: true });
-    console.log('BetterX directory deleted successfully');
+    // Delete the BETTERX directory including desktop.settings.json
+    await fs.promises.rm(BETTERX_PATH, { recursive: true, force: true });
+    
+    // Recreate the BETTERX directory and default settings file
+    ensureSettingsFile();
+
+    console.log('BetterX directory and settings reset successfully');
 
     app.relaunch();
     app.exit(0);
   } catch (error) {
     console.error('Error resetting BetterX:', error);
-    throw error; // Rethrow the error so it can be caught by the caller
+    throw error;
   }
 }

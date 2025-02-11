@@ -52,7 +52,7 @@ export async function fetchBundleHash() {
 
 export async function downloadAndUpdateBundle(settings, newHash) {
     ensureDirectoryExists(BETTERX_PATH); // S'assurer que le dossier BETTERX_PATH existe
-    const tempBundlePath = path.join(BETTERX_PATH, 'temp_main.bundle.js');
+    const tempBundlePath = path.join(BETTERX_PATH, 'temp_bundle.js');
     
     try {
       console.log('Downloading bundle...');
