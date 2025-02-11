@@ -103,6 +103,31 @@
             document.getElementById('version').textContent = 'v' + version;
             console.log('Received version:', version); // Debug log
         });
+
+        window.about.onUpdateInfo(({ Devs, version }) => {
+            // Update version and dev info
+            if (Devs.Mopi) {
+                document.getElementById('mopi-name').textContent = Devs.Mopi.name;
+                const mopiHandle = document.getElementById('mopi-handle');
+                mopiHandle.textContent = '@' + Devs.Mopi.handle;
+                mopiHandle.href = `https://twitter.com/${Devs.Mopi.handle}`;
+            }
+            if (Devs.TPM28) {
+                document.getElementById('tpm28-name').textContent = Devs.TPM28.name;
+                const tpm28Handle = document.getElementById('tpm28-handle');
+                tpm28Handle.textContent = '@' + Devs.TPM28.handle;
+                tpm28Handle.href = `https://twitter.com/${Devs.TPM28.handle}`;
+            }
+            document.getElementById('version').textContent = 'v' + version;
+
+            // Set up link handlers
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.about.openLink(link.href);
+                });
+            });
+        });
     </script>
 </body>
 </html>

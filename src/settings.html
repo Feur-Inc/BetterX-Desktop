@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetterX Settings</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #15202B;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 15%;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .settings-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .setting-item {
+            background-color: #192734;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .setting-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .setting-description {
+            font-size: 14px;
+            color: #8899A6;
+        }
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #1DA1F2;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .bundle-path-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        #bundlePath {
+            flex: 1;
+            padding: 8px;
+            background: #253341;
+            border: 1px solid #38444d;
+            color: #fff;
+            border-radius: 4px;
+        }
+        
+        #chooseBundlePath {
+            padding: 8px 16px;
+            background: #1DA1F2;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        #chooseBundlePath:hover {
+            background: #1a91da;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="resources/betterX.png" alt="BetterX Logo" class="logo">
+        <h1>BetterX Settings</h1>
+    </div>
+    <div class="settings-container" id="settingsContainer">
+        <div class="setting-item">
+            <div class="setting-header">
+                <div class="setting-title">BetterX Bundle Path</div>
+            </div>
+            <div class="setting-description">Path to your BetterX bundle folder</div>
+            <div class="bundle-path-container">
+                <input type="text" id="bundlePath" readonly>
+                <button id="chooseBundlePath">Choose Path</button>
+            </div>
+        </div>
+        <div class="setting-item">
+            <div class="setting-header">
+                <div class="setting-title">Window Transparency</div>
+                <label class="toggle">
+                    <input type="checkbox" id="enableTransparency">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-description">Enable window transparency (requires a compatible theme)</div>
+        </div>
+        <div class="setting-item">
+            <div class="setting-header">
+                <div class="setting-title">Minimize to Tray</div>
+                <label class="toggle">
+                    <input type="checkbox" id="minimizeToTray">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-description">Keep BetterX running in the system tray when minimized</div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-header">
+                <div class="setting-title">Start Minimized</div>
+                <label class="toggle">
+                    <input type="checkbox" id="startMinimized">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-description">Start BetterX minimized on system startup</div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-header">
+                <div class="setting-title">Auto Start</div>
+                <label class="toggle">
+                    <input type="checkbox" id="autoStart">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-description">Start BetterX automatically when you log in</div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-header">
+                <div class="setting-title">Disable Updates</div>
+                <label class="toggle">
+                    <input type="checkbox" id="disableUpdates">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-description">Disable automatic updates for BetterX</div>
+        </div>
+    </div>
+    <script src="settings.js"></script>
+</body>
+</html>

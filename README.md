@@ -43,6 +43,39 @@ Feur.
 
 BetterX offers a range of powerful features to customize and improve your X experience:
 
+### 🆕 New in v2.0 BETA
+
+#### 🔍 ImageMagnifier
+- Zoom into images with a magnifying glass feature
+- Perfect for examining tiny details in photos
+
+#### 🐱 Oneko
+- A cute cat companion follows your cursor
+- Makes browsing more playful and entertaining
+
+#### 😺 MeowAd
+- Replaces advertisements with adorable cat pictures
+- A more pleasant browsing experience
+
+#### 📸 TweetScreenshot
+- Capture tweets with a dedicated screenshot button
+- Easy sharing and preservation of memorable tweets
+
+#### 🟢 UsersStatus
+- See BetterX users' status and badges on their profiles
+- Better community integration
+
+#### 🎨 Themes
+- Customize your X experience with various themes
+- Make the interface truly yours
+
+#### 🪟 WindowTransparency
+- Adjust window transparency
+- Create a modern, sleek appearance
+- Perfect for multitasking
+
+### Classic Features
+
 ### AdBlocker
 - Removes ads and sponsored content from X
 - Enjoy a cleaner, distraction-free timeline
@@ -74,6 +107,10 @@ BetterX offers a range of powerful features to customize and improve your X expe
 ### NoTrending
 - Removes the trending topics section
 - Declutter your right sidebar for a more focused experience
+
+> [!WARNING]
+> This is a beta release - you might encounter some bugs. Please report any issues you find!
+> Pro tip: Many issues can be fixed with a simple CTRL+R refresh! 🔄
 
 ---
 
