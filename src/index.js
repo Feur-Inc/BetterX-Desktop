@@ -15,6 +15,7 @@ import fsPromises from 'fs/promises';
 import { showSettingsWindow } from './windows/settingsWindow.js';
 import { watch } from 'fs'; // Add this import
 import { getVersion } from './utils/versionUtils.js';  // Add this import at the top with other imports
+import { initializeDiscordRPC, destroyDiscordRPC } from './services/discordRPC.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -171,6 +172,12 @@ if (!gotTheLock) {
         }
       }
     });
+
+    // Initialize Discord RPC if enabled
+    const settings = loadSettings();
+    if (settings.enableDiscordRPC) {
+        initializeDiscordRPC();
+    }
   });
 
   app.on('window-all-closed', (event) => {
@@ -181,6 +188,7 @@ if (!gotTheLock) {
   app.on('before-quit', () => {
     isQuitting = true;
     app.isQuitting = true; // Set app.isQuitting
+    destroyDiscordRPC();
     ipcMain.removeAllListeners('update-response');
     destroyTray();
   });
@@ -229,6 +237,14 @@ if (!gotTheLock) {
           dialog.showErrorBox('Invalid Path', 'The selected bundle path is invalid.');
           // Revert to previous path
           updateSetting('bundlePath', settings.bundlePath);
+        }
+        break;
+
+      case 'enableDiscordRPC':
+        if (value) {
+            initializeDiscordRPC();
+        } else {
+            destroyDiscordRPC();
         }
         break;
     }

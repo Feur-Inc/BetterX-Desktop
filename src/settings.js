@@ -2,7 +2,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const settings = await window.electron.getSettings();
     
     // Initialize all checkboxes
-    const checkboxes = ['minimizeToTray', 'startMinimized', 'autoStart', 'disableUpdates', 'enableTransparency'];
+    const checkboxes = ['minimizeToTray', 'startMinimized', 'autoStart', 'disableUpdates', 'enableTransparency', 'enableDiscordRPC'];
     checkboxes.forEach(id => {
         const checkbox = document.getElementById(id);
         if (checkbox) {
