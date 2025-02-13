@@ -10,15 +10,24 @@ Enhance your X (formerly Twitter) experience with BetterX Desktop!
 Download the latest Windows installer: [betterx-desktop.Setup.2.0.0-beta.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop.Setup.2.0.0-beta.exe)
 
 > [!CAUTION]
-> IMPORTANT NOTE: 
+> ⚠️IMPORTANT NOTE: 
+>
 > Upgrading from previous version to v2.0?
+>
 > Potential issues:
+>
 > 1️⃣Right-click on BetterX tray icon 
+>
 > 2️⃣Select "Reset BetterX"
+>
 > Still having issues?
+>
 > Delete BetterX config folder:
+>
 > Linux: ~/.config/BetterX/
+>
 > Windows: %appdata%/BetterX
+>
 > And restart BetterX for a fresh start
 
 > [!WARNING]
