@@ -36,7 +36,12 @@
   "build": {
     "appId": "com.feur-inc.betterx",
     "mac": {
-      "category": "public.app-category.entertainment"
+      "category": "public.app-category.entertainment",
+      "target": {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      },
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "linux": {
       "target": [
