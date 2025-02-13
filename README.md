@@ -32,7 +32,7 @@ Feur.
 *Description: This image demonstrates how BetterX integrates seamlessly into the X (formerly Twitter) settings menu, providing easy access to its features.*
 
 ### BetterX Settings Panel
-![BetterX Settings](https://raw.githubusercontent.com/Feur-Inc/BetterX-Desktop/refs/heads/main/attachments/betterx_settings.png)
+![BetterX Settings](https://raw.githubusercontent.com/Feur-Inc/BetterX-Desktop/refs/heads/main/attachments/betterx_settingsv2.png)
 
 *Description: The BetterX Settings panel showcases various customization options available to users, including AdBlocker, BringTwitterBack, DMDrawerResizer, and more.*
 
