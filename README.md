@@ -7,17 +7,16 @@ Enhance your X (formerly Twitter) experience with BetterX Desktop!
 ## Installation
 
 ### Windows
-Download the latest Windows installer: [BetterX-Desktop.Setup.1.0.1.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop.Setup.1.0.1-alpha.exe)
+Download the latest Windows installer: [betterx-desktop.Setup.2.0.0-beta.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop.Setup.2.0.0-beta.exe)
 
 > [!WARNING]
 > The file might be flagged as a virus, but you can safely ignore this warning.
 
 ### Linux
 Choose your preferred package format:
-- **AppImage**: [BetterX-Desktop-1.0.1_alpha.AppImage](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop-1.0.1-alpha.AppImage)
-- **Snap**: [BetterX-Desktop_1.0.1_alpha-amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop_1.0.1-alpha_amd64.snap)
-- **DEB**: [BetterX-Desktop_1.0.1_alpha-amd64.deb](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop_1.0.1-alpha_amd64.deb)
-- **RPM**: [BetterX-Desktop_1.0.1_alpha-x86_64.rpm](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop-1.0.1-alpha.x86_64.rpm)
+- **AppImage**: [betterx-desktop-2.0.0-beta.AppImage](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop-2.0.0-beta.AppImage)
+- **Snap**: [betterx-desktop_2.0.0-beta_amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.snap)
+- **DEB**: [betterx-desktop_2.0.0-beta_amd64.deb](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.deb)
 - **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-git](https://aur.archlinux.org/packages/betterx-desktop-git)
 ### macOS
 Feur.
