@@ -38,7 +38,7 @@ Choose your preferred package format:
 - **AppImage**: [betterx-desktop-2.0.0-beta.AppImage](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop-2.0.0-beta.AppImage)
 - **Snap**: [betterx-desktop_2.0.0-beta_amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.snap)
 - **DEB**: [betterx-desktop_2.0.0-beta_amd64.deb](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.deb)
-- **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-git](https://aur.archlinux.org/packages/betterx-desktop-git)
+- **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-bin](https://aur.archlinux.org/packages/betterx-desktop-bin)
 ### macOS
 Feur.
 
