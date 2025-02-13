@@ -7,32 +7,50 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-x64:
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v4
-    
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
         version: 8
-        
     - name: Install dependencies
       run: pnpm install
-      
-    - name: Build
-      run: pnpm build:win
+    - name: Build x64
+      run: pnpm build:win --x64
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Upload artifact
+    - name: Upload x64 artifact
       uses: actions/upload-artifact@v4
       with:
-        name: windows-build
-        path: dist/*.exe
+        name: windows-x64-build
+        path: dist/*-x64.exe
+
+  build-arm64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build ARM64
+      run: pnpm build:win --arm64
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload ARM64 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-arm64-build
+        path: dist/*-arm64.exe

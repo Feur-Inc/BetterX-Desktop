@@ -35,13 +35,14 @@
   },
   "build": {
     "appId": "com.feur-inc.betterx",
+    "win": {
+      "target": "nsis",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
     "mac": {
       "category": "public.app-category.entertainment",
-      "target": {
-        "target": "dmg",
-        "arch": ["x64", "arm64"]
-      },
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "target": "dmg",
+      "artifactName": "${productName}-${version}-${arch}.dmg"
     },
     "linux": {
       "target": [

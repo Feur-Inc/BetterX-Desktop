@@ -31,10 +31,26 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: Upload artifact
+    - name: Upload AppImage
       uses: actions/upload-artifact@v4
       with:
-        name: linux-build
-        path: |
-          dist/*.AppImage
-          dist/*.deb
+        name: linux-appimage
+        path: dist/*.AppImage
+        
+    - name: Upload DEB
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-deb
+        path: dist/*.deb
+        
+    - name: Upload RPM
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-rpm
+        path: dist/*.rpm
+        
+    - name: Upload Snap
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-snap
+        path: dist/*.snap
