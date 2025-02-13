@@ -28,8 +28,10 @@ jobs:
     - name: Upload x64 artifact
       uses: actions/upload-artifact@v4
       with:
-        name: windows-x64-build
+        name: betterx-windows-x64
         path: dist/*-x64.exe
+        compression-level: 0
+        if-no-files-found: error
 
   build-arm64:
     runs-on: windows-latest
@@ -52,5 +54,7 @@ jobs:
     - name: Upload ARM64 artifact
       uses: actions/upload-artifact@v4
       with:
-        name: windows-arm64-build
+        name: betterx-windows-arm64
         path: dist/*-arm64.exe
+        compression-level: 0
+        if-no-files-found: error

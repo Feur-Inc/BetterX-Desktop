@@ -34,23 +34,31 @@ jobs:
     - name: Upload AppImage
       uses: actions/upload-artifact@v4
       with:
-        name: linux-appimage
+        name: betterx-linux-appimage
         path: dist/*.AppImage
+        compression-level: 0
+        if-no-files-found: error
         
     - name: Upload DEB
       uses: actions/upload-artifact@v4
       with:
-        name: linux-deb
+        name: betterx-linux-deb
         path: dist/*.deb
+        compression-level: 0
+        if-no-files-found: error
         
     - name: Upload RPM
       uses: actions/upload-artifact@v4
       with:
-        name: linux-rpm
+        name: betterx-linux-rpm
         path: dist/*.rpm
+        compression-level: 0
+        if-no-files-found: error
         
     - name: Upload Snap
       uses: actions/upload-artifact@v4
       with:
-        name: linux-snap
+        name: betterx-linux-snap
         path: dist/*.snap
+        compression-level: 0
+        if-no-files-found: error
