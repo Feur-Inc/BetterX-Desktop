@@ -11,7 +11,8 @@
     "build": "electron-builder build --win --linux",
     "build:win": "electron-builder build --win",
     "build:linux": "electron-builder build --linux",
-    "build:arch": "electron-builder build --linux pacman"
+    "build:arch": "electron-builder build --linux pacman",
+    "build:mac": "electron-builder build --mac"
   },
   "keywords": [
     "betterx",
