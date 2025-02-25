@@ -51,8 +51,7 @@
         }
       ],
       "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "requestedExecutionLevel": "asInvoker",
-      "publisherName": "Feur-Inc"
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
@@ -66,6 +65,11 @@
       "include": "installer.nsh",
       "shortcutName": "BetterX Desktop",
       "uninstallDisplayName": "BetterX Desktop"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Feur-Inc",
+      "repo": "BetterX-Desktop"
     },
     "mac": {
       "category": "public.app-category.entertainment",
