@@ -1,5 +1,6 @@
 {
   "name": "betterx-desktop",
+  "productName": "BetterX Desktop",
   "version": "2.0.0-beta",
   "homepage": "https://github.com/Feur-Inc/BetterX-Desktop",
   "description": "Desktop application for BetterX, enhancing your browsing experience",
@@ -11,7 +12,8 @@
     "build": "electron-builder build --win --linux",
     "build:win": "electron-builder build --win",
     "build:linux": "electron-builder build --linux",
-    "build:arch": "electron-builder build --linux pacman"
+    "build:arch": "electron-builder build --linux pacman",
+    "build:mac": "electron-builder build --mac"
   },
   "keywords": [
     "betterx",
@@ -25,7 +27,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
-    "discord-rpc": "^4.0.1",
+    "discord-rpc": "^3.1.0",
     "electron-context-menu": "^4.0.4",
     "node-fetch": "^3.3.0"
   },
@@ -35,8 +37,31 @@
   },
   "build": {
     "appId": "com.feur-inc.betterx",
+    "productName": "BetterX Desktop",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true,
+      "installerIcon": "build/betterX.ico",
+      "uninstallerIcon": "build/betterX.ico",
+      "deleteAppDataOnUninstall": true,
+      "displayLanguageSelector": true,
+      "include": "installer.nsh"
+    },
     "mac": {
-      "category": "public.app-category.entertainment"
+      "category": "public.app-category.entertainment",
+      "target": "dmg",
+      "artifactName": "${productName}-${version}-${arch}.dmg}"
     },
     "linux": {
       "target": [
@@ -52,7 +77,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "electron"
+      "electron",
+      "electron-winstaller"
     ]
   }
 }
