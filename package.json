@@ -46,8 +46,7 @@
         }
       ],
       "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "requestedExecutionLevel": "asInvoker",
-      "publisherName": "Feur-Inc"
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
