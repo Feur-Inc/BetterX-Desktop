@@ -13,7 +13,8 @@
     "build:win": "electron-builder build --win",
     "build:linux": "electron-builder build --linux",
     "build:arch": "electron-builder build --linux pacman",
-    "build:mac": "electron-builder build --mac"
+    "build:mac": "electron-builder build --mac",
+    "build:win-portable": "electron-builder build --win portable"
   },
   "keywords": [
     "betterx",
@@ -42,6 +43,10 @@
       "target": [
         {
           "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
           "arch": ["x64"]
         }
       ],

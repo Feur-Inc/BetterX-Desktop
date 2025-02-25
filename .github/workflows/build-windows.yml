@@ -25,11 +25,18 @@ jobs:
       run: pnpm build:win --x64
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Upload x64 artifact
+    - name: Upload x64 installer artifact
       uses: actions/upload-artifact@v4
       with:
-        name: betterx-windows-x64
-        path: dist/*-x64.exe
+        name: betterx-windows-x64-installer
+        path: dist/*-Setup-*.exe
+        compression-level: 0
+        if-no-files-found: error
+    - name: Upload x64 portable artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-windows-x64-portable
+        path: dist/*-portable.exe
         compression-level: 0
         if-no-files-found: error
 

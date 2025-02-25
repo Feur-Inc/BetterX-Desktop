@@ -9,6 +9,15 @@ Enhance your X (formerly Twitter) experience with BetterX Desktop!
 ### Windows
 Download the latest Windows installer: [betterx-desktop.Setup.2.0.0-beta.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop.Setup.2.0.0-beta.exe)
 
+#### Portable Version
+For users who prefer not to install software, we also offer a portable version: [BetterX-Desktop-2.0.0-beta-portable.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/BetterX-Desktop-2.0.0-beta-portable.exe)
+
+The portable version:
+- Requires no installation
+- Can be run from any location, including USB drives
+- Stores all data in its own directory
+- Perfect for restricted environments or frequent travelers
+
 > [!CAUTION]
 > ⚠️IMPORTANT NOTE: 
 >
