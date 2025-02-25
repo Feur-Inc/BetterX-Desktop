@@ -46,7 +46,8 @@
         }
       ],
       "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "asInvoker",
+      "publisherName": "Feur-Inc"
     },
     "nsis": {
       "oneClick": false,
@@ -59,7 +60,6 @@
       "displayLanguageSelector": true,
       "include": "installer.nsh",
       "shortcutName": "BetterX Desktop",
-      "publisherName": "Feur-Inc",
       "uninstallDisplayName": "BetterX Desktop"
     },
     "mac": {
