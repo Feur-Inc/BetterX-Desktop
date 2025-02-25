@@ -45,7 +45,8 @@
           "arch": ["x64"]
         }
       ],
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
@@ -56,7 +57,10 @@
       "uninstallerIcon": "build/betterX.ico",
       "deleteAppDataOnUninstall": true,
       "displayLanguageSelector": true,
-      "include": "installer.nsh"
+      "include": "installer.nsh",
+      "shortcutName": "BetterX Desktop",
+      "publisherName": "Feur-Inc",
+      "uninstallDisplayName": "BetterX Desktop"
     },
     "mac": {
       "category": "public.app-category.entertainment",
