@@ -37,8 +37,7 @@ Download the latest Windows installer: [betterx-desktop.Setup.2.0.0-beta.exe](ht
 
 When installing on Windows, you may encounter security warnings:
 
-1. **SmartScreen Warning**: Click "More info" > "Run anyway" to proceed
-2. **File Blocking**: Some systems may require right-clicking the installer > Properties > "Unblock" before installation
+**File Blocking**: Some systems may require right-clicking the installer > Properties > "Unblock" before installation
 
 These warnings appear because the app is not signed with a paid certificate. They are normal and the application is safe to use.
 
