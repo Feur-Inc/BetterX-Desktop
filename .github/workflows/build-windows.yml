@@ -36,7 +36,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: betterx-windows-x64-portable
-        path: dist/*-portable.exe
+        path: dist/*-Portable-*.exe
         compression-level: 0
         if-no-files-found: error
 
