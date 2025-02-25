@@ -64,8 +64,13 @@
     },
     "mac": {
       "category": "public.app-category.entertainment",
-      "target": "dmg",
-      "artifactName": "${productName}-${version}-${arch}.dmg}"
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.dmg"
     },
     "linux": {
       "target": [
