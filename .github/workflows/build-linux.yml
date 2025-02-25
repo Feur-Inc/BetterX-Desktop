@@ -1,0 +1,64 @@
+name: Build Linux
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: pnpm install
+      
+    - name: Build
+      run: pnpm build:linux
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Upload AppImage
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-appimage
+        path: dist/*.AppImage
+        compression-level: 0
+        if-no-files-found: error
+        
+    - name: Upload DEB
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-deb
+        path: dist/*.deb
+        compression-level: 0
+        if-no-files-found: error
+        
+    - name: Upload RPM
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-rpm
+        path: dist/*.rpm
+        compression-level: 0
+        if-no-files-found: error
+        
+    - name: Upload Snap
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-snap
+        path: dist/*.snap
+        compression-level: 0
+        if-no-files-found: error
