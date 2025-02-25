@@ -46,7 +46,8 @@
         }
       ],
       "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "asInvoker",
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "oneClick": false,
@@ -59,7 +60,10 @@
       "displayLanguageSelector": true,
       "include": "installer.nsh",
       "shortcutName": "BetterX Desktop",
-      "uninstallDisplayName": "BetterX Desktop"
+      "uninstallDisplayName": "BetterX Desktop",
+      "artifactName": "${productName} Setup ${version}.exe",
+      "warningsAsErrors": false,
+      "perMachine": false
     },
     "mac": {
       "category": "public.app-category.entertainment",

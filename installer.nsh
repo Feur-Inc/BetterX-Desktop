@@ -8,3 +8,14 @@
     endRedist:
   ${EndIf}
 !macroend
+
+!macro customHeader
+  # Add special metadata to try to improve SmartScreen experience
+  VIAddVersionKey "OriginalFilename" "${PRODUCT_NAME} Setup.exe"
+  
+  # Custom unblock attempt
+  Function .onInit
+    # Set attributes that might help with SmartScreen
+    System::Call 'kernel32::SetFileAttributes(t "$EXEPATH", i 0x0080) i.r0'
+  FunctionEnd
+!macroend
