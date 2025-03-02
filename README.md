@@ -7,18 +7,55 @@ Enhance your X (formerly Twitter) experience with BetterX Desktop!
 ## Installation
 
 ### Windows
-Download the latest Windows installer: [BetterX-Desktop.Setup.1.0.1.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop.Setup.1.0.1-alpha.exe)
+Download the latest Windows installer: [betterx-desktop.Setup.2.0.0-beta.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop.Setup.2.0.0-beta.exe)
+
+#### Portable Version
+For users who prefer not to install software, we also offer a portable version: [BetterX-Desktop-2.0.0-beta-portable.exe](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/BetterX-Desktop-2.0.0-beta-portable.exe)
+
+The portable version:
+- Requires no installation
+- Can be run from any location, including USB drives
+- Stores all data in its own directory
+- Perfect for restricted environments or frequent travelers
+
+> [!CAUTION]
+> ⚠️IMPORTANT NOTE: 
+>
+> Upgrading from previous version to v2.0?
+>
+> Potential issues:
+>
+> 1️⃣Right-click on BetterX tray icon 
+>
+> 2️⃣Select "Reset BetterX"
+>
+> Still having issues?
+>
+> Delete BetterX config folder:
+>
+> Linux: ~/.config/BetterX/
+>
+> Windows: %appdata%/BetterX
+>
+> And restart BetterX for a fresh start
 
 > [!WARNING]
 > The file might be flagged as a virus, but you can safely ignore this warning.
 
+### Windows Installation Notes
+
+When installing on Windows, you may encounter security warnings:
+
+**File Blocking**: Some systems may require right-clicking the installer > Properties > "Unblock" before installation
+
+These warnings appear because the app is not signed with a paid certificate. They are normal and the application is safe to use.
+
 ### Linux
 Choose your preferred package format:
-- **AppImage**: [BetterX-Desktop-1.0.1_alpha.AppImage](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop-1.0.1-alpha.AppImage)
-- **Snap**: [BetterX-Desktop_1.0.1_alpha-amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop_1.0.1-alpha_amd64.snap)
-- **DEB**: [BetterX-Desktop_1.0.1_alpha-amd64.deb](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop_1.0.1-alpha_amd64.deb)
-- **RPM**: [BetterX-Desktop_1.0.1_alpha-x86_64.rpm](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v1.0.1-alpha/betterx-desktop-1.0.1-alpha.x86_64.rpm)
-- **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-git](https://aur.archlinux.org/packages/betterx-desktop-git)
+- **AppImage**: [betterx-desktop-2.0.0-beta.AppImage](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop-2.0.0-beta.AppImage)
+- **Snap**: [betterx-desktop_2.0.0-beta_amd64.snap](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.snap)
+- **DEB**: [betterx-desktop_2.0.0-beta_amd64.deb](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.deb)
+- **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-bin](https://aur.archlinux.org/packages/betterx-desktop-bin)
 ### macOS
 Feur.
 
@@ -33,7 +70,7 @@ Feur.
 *Description: This image demonstrates how BetterX integrates seamlessly into the X (formerly Twitter) settings menu, providing easy access to its features.*
 
 ### BetterX Settings Panel
-![BetterX Settings](https://raw.githubusercontent.com/Feur-Inc/BetterX-Desktop/refs/heads/main/attachments/betterx_settings.png)
+![BetterX Settings](https://raw.githubusercontent.com/Feur-Inc/BetterX-Desktop/refs/heads/main/attachments/betterx_settingsv2.png)
 
 *Description: The BetterX Settings panel showcases various customization options available to users, including AdBlocker, BringTwitterBack, DMDrawerResizer, and more.*
 
