@@ -51,7 +51,9 @@ export function createMainWindow(settings) {
       event.preventDefault();
     });
 
-    mainWindow.loadURL('https://x.com/login');
+    // Check for URL to load from command line
+    const urlToLoad = app.commandLine.getSwitchValue('url-to-load') || 'https://x.com/login';
+    mainWindow.loadURL(urlToLoad);
 
     // Inject script to prevent title changes
     mainWindow.webContents.on('did-finish-load', () => {

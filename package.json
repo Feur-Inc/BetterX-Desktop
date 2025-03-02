@@ -54,5 +54,14 @@
     "onlyBuiltDependencies": [
       "electron"
     ]
-  }
+  },
+  "protocols": [
+    {
+      "name": "BetterX Web Protocol",
+      "schemes": [
+        "https"
+      ],
+      "role": "Viewer"
+    }
+  ]
 }

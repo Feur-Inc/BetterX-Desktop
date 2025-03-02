@@ -28,6 +28,51 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
+  // Register protocol handler
+  if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+      app.setAsDefaultProtocolClient('https', process.execPath, [
+        path.resolve(process.argv[1])
+      ]);
+    }
+  } else {
+    app.setAsDefaultProtocolClient('https');
+  }
+
+  // Handle URLs opened on macOS
+  app.on('open-url', (event, url) => {
+    event.preventDefault();
+    handleIncomingUrl(url);
+  });
+
+  // Handle URLs opened on Windows/Linux
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    const url = commandLine.find(arg => arg.startsWith('https://twitter.com') || arg.startsWith('https://x.com'));
+    if (url) {
+      handleIncomingUrl(url);
+    }
+    
+    const mainWindow = getMainWindow();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      if (!mainWindow.isVisible()) mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+
+  function handleIncomingUrl(url) {
+    if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i)) {
+      const mainWindow = getMainWindow();
+      if (mainWindow) {
+        mainWindow.loadURL(url);
+        mainWindow.show();
+      } else {
+        // Store URL to load after window creation
+        app.commandLine.appendSwitch('url-to-load', url);
+      }
+    }
+  }
+
   // Ajouter ces lignes pour supprimer les messages d'erreur Autofill
   app.commandLine.appendSwitch('disable-features', 'AutofillServerCommunication');
 
