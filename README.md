@@ -40,8 +40,8 @@ Choose your preferred package format:
 - **DEB**: [betterx-desktop_2.0.0-beta_amd64.deb](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop_2.0.0-beta_amd64.deb)
 - **AUR**: [https://aur.archlinux.org/packages/betterx-desktop-bin](https://aur.archlinux.org/packages/betterx-desktop-bin)
 ### macOS
-Feur.
-
+- **Arm (Mac M1,M2...)**: [betterx-desktop-2.0.0-beta-arm64.dmg](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop-2.0.0-beta-arm64.dmg)
+- **X64**: [betterx-desktop-2.0.0-beta-x64.dmg](https://github.com/Feur-Inc/BetterX-Desktop/releases/download/v2.0/betterx-desktop-2.0.0-beta-x64.dmg)
 ---
 
 ## Screenshots
