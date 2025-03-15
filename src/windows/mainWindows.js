@@ -10,7 +10,6 @@ import { checkForUpdates, showUpdateModal } from '../utils/updateUtils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TEST_UPDATE_MODE = false;
 
 let mainWindow = null;
 let loadingScreen = null;
@@ -104,6 +103,19 @@ export function createMainWindow(settings) {
     });
 
     initTray(mainWindow);
+    
+    // Check for updates when the window is ready
+    mainWindow.webContents.once('did-finish-load', async () => {
+      try {
+        const updateInfo = await checkForUpdates(settings);
+        if (updateInfo && updateInfo.newHash) {
+          console.log('Update available, showing update modal');
+          showUpdateModal(mainWindow, updateInfo.newHash);
+        }
+      } catch (error) {
+        console.error('Error during update check:', error);
+      }
+    });
   }
   return mainWindow;
 }

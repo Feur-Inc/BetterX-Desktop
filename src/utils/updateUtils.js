@@ -1,11 +1,13 @@
 import https from 'https';
+import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { BUNDLE_URL, TEST_UPDATE_MODE, BETTERX_PATH } from '../config/constants.js';
 import { loadSettings, saveSettings } from '../services/settingsService.js';
 import { calculateFileHash } from './fileUtils.js';
-import { ensureDirectoryExists } from './fileUtils.js'; // Ajout de l'import
+import { ensureDirectoryExists } from './fileUtils.js';
+import { safeRelaunch } from '../windows/mainWindows.js'; // Add this import
 
 export async function checkForUpdates(settings) {
     console.log('Checking for updates...');
@@ -41,7 +43,10 @@ export async function checkForUpdates(settings) {
 
 export async function fetchBundleHash() {
     return new Promise((resolve, reject) => {
-      https.get(BUNDLE_URL, (response) => {
+      // Choose http or https module based on URL protocol
+      const protocol = BUNDLE_URL.startsWith('https:') ? https : http;
+      
+      protocol.get(BUNDLE_URL, (response) => {
         const hash = crypto.createHash('sha256');
         response.on('data', (chunk) => hash.update(chunk));
         response.on('end', () => resolve(hash.digest('hex')));
@@ -61,8 +66,11 @@ export async function downloadAndUpdateBundle(settings, newHash) {
       console.log('Calculating hash of downloaded bundle...');
       const downloadedHash = await calculateFileHash(tempBundlePath);
       
-      if (downloadedHash !== newHash) {
+      // Skip hash verification in TEST_UPDATE_MODE
+      if (!TEST_UPDATE_MODE && downloadedHash !== newHash) {
         throw new Error('Downloaded bundle hash does not match expected hash');
+      } else if (TEST_UPDATE_MODE) {
+        console.log('Test mode: Skipping hash verification');
       }
       
       console.log('Moving temporary bundle to final location...');
@@ -85,7 +93,11 @@ export async function downloadAndUpdateBundle(settings, newHash) {
   export function downloadBundle(dest) {
     return new Promise((resolve, reject) => {
       const file = fs.createWriteStream(dest);
-      https.get(BUNDLE_URL, (response) => {
+      
+      // Choose http or https module based on URL protocol
+      const protocol = BUNDLE_URL.startsWith('https:') ? https : http;
+      
+      protocol.get(BUNDLE_URL, (response) => {
         if (response.statusCode !== 200) {
           reject(new Error(`Failed to download bundle. Status code: ${response.statusCode}`));
           return;

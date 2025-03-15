@@ -1,3 +1,4 @@
 node_modules
 dist
 test
+scripts/bundle-server/test-bundle.js
