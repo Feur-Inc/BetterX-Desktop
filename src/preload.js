@@ -23,6 +23,84 @@ window.addEventListener('message', (event) => {
     }
 });
 
+// Track page changes and update Discord RPC
+function trackPageChanges() {
+    // Initial page check
+    updateDiscordStatus();
+    
+    // Use MutationObserver to detect URL/content changes
+    const observer = new MutationObserver(() => {
+        // Throttle updates using setTimeout
+        clearTimeout(window._discordUpdateTimeout);
+        window._discordUpdateTimeout = setTimeout(() => {
+            updateDiscordStatus();
+        }, 2000); // Only update every 2 seconds at most
+    });
+    
+    // Start observing the document with configurable parameters
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Also check when URL changes (for single-page apps)
+    let lastUrl = location.href;
+    const urlCheckInterval = setInterval(() => {
+        if (location.href !== lastUrl) {
+            lastUrl = location.href;
+            updateDiscordStatus();
+        }
+    }, 2000); // Check less frequently (every 2 seconds)
+}
+
+// Track the last status to avoid duplicate updates
+let lastDetails = '';
+let lastState = '';
+
+function updateDiscordStatus() {
+    const url = window.location.href;
+    let details = 'Browsing X';
+    let state = 'Using BetterX Desktop';
+    
+    // Determine the current page type
+    if (url.includes('/home')) {
+        details = 'Viewing Home Timeline';
+    } else if (url.includes('/explore')) {
+        details = 'Exploring Trends';
+    } else if (url.includes('/notifications')) {
+        details = 'Checking Notifications';
+    } else if (url.includes('/messages')) {
+        details = 'Reading Messages';
+    } else if (url.includes('/search')) {
+        details = 'Searching X';
+        const query = new URL(url).searchParams.get('q');
+        if (query) {
+            state = `Searching for: ${query.substring(0, 30)}`;
+        }
+    } else if (url.match(/\/[^\/]+\/status\/\d+/)) {
+        details = 'Reading a Post';
+        // Try to get the author's name if available
+        const authorElement = document.querySelector('[data-testid="User-Name"] > div:first-child span');
+        if (authorElement) {
+            state = `From @${authorElement.textContent.trim()}`;
+        }
+    } else if (url.match(/\/[^\/]+\/?$/)) {
+        details = 'Viewing Profile';
+        // Try to get profile name
+        const profileMatch = url.match(/\/([^\/]+)\/?$/);
+        if (profileMatch && profileMatch[1]) {
+            state = `@${profileMatch[1]}`;
+        }
+    }
+    
+    // Only send update if status has changed
+    if (details !== lastDetails || state !== lastState) {
+        lastDetails = details;
+        lastState = state;
+        ipcRenderer.send('update-discord-status', details, state);
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   Object.defineProperty(document, 'title', {
     set: function() {
@@ -54,6 +132,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const style = document.createElement('style');
   style.textContent = defaultStyles;
   document.head.appendChild(style);
+  
+  // Initialize page tracking for Discord RPC
+  trackPageChanges();
 });
 
 // Expose necessary APIs to the renderer process
