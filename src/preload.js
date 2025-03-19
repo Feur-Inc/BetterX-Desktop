@@ -34,7 +34,7 @@ function trackPageChanges() {
         clearTimeout(window._discordUpdateTimeout);
         window._discordUpdateTimeout = setTimeout(() => {
             updateDiscordStatus();
-        }, 2000); // Only update every 2 seconds at most
+        }); // Only update every 2 seconds at most
     });
     
     // Start observing the document with configurable parameters
@@ -71,6 +71,44 @@ function updateDiscordStatus() {
         details = 'Checking Notifications';
     } else if (url.includes('/messages')) {
         details = 'Reading Messages';
+    } else if (url.includes('/i/bookmarks')) {
+        details = 'Checking Bookmarks';
+    } else if (url.includes('/i/grok')) {
+        details = "Grokin' it";
+    } else if (url.includes('/i/lists')) {
+        details = 'Browsing Lists';
+    } else if (url.includes('/communities')) {
+        details = 'Checking Communities';
+    } else if (url.includes('/premium_sign_up') || url.includes('/i/twitter_blue')) {
+        details = 'Viewing Premium';
+    } else if (url.includes('/i/flow/scheduled_tweets')) {
+        details = 'Managing Scheduled Tweets';
+    } else if (url.includes('/i/topics')) {
+        details = 'Browsing Topics';
+    } else if (url.includes('/i/subscriptions')) {
+        details = 'Managing Subscriptions';
+    } else if (url.includes('/analytics')) {
+        details = 'Checking Analytics';
+    } else if (url.includes('/communitynotes')) {
+        details = 'Checking Community Notes';
+    } else if (url.includes('/login')) {
+        details = 'Logging In';
+    } else if (url.match(/\/[^\/]+\/following/)) {
+        details = 'Viewing Following List';
+        const profileMatch = url.match(/\/([^\/]+)\/following/);
+        if (profileMatch && profileMatch[1]) {
+            state = `@${profileMatch[1]}'s following`;
+        }
+    } else if (url.match(/\/[^\/]+\/followers/)) {
+        details = 'Viewing Followers List';
+        const profileMatch = url.match(/\/([^\/]+)\/followers/);
+        if (profileMatch && profileMatch[1]) {
+            state = `@${profileMatch[1]}'s followers`;
+        }
+    } else if (url.includes('/settings')) {
+        details = 'Configuring Settings';
+    } else if (url.includes('/compose/tweet')) {
+        details = 'Composing a Tweet';
     } else if (url.includes('/search')) {
         details = 'Searching X';
         const query = new URL(url).searchParams.get('q');
