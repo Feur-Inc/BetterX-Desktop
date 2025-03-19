@@ -7,7 +7,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "run": "electron ./src/index.js",
+    "start": "electron ./src/index.js",
     "app:dir": "electron-builder --dir",
     "bundle-server": "node scripts/bundle-server/test-server.js",
     "build": "electron-builder build --win --linux",
