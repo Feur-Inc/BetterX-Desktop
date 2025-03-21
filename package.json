@@ -35,7 +35,7 @@
     "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "electron": "^34.1.1",
+    "electron": "35.0.3",
     "electron-builder": "^26.0.6"
   },
   "build": {
@@ -52,7 +52,7 @@
           "arch": ["x64"]
         }
       ],
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "artifactName": "${productName}-${arch}.${ext}",
       "requestedExecutionLevel": "asInvoker",
       "signAndEditExecutable": false,
       "forceCodeSigning": false
@@ -69,10 +69,10 @@
       "include": "installer.nsh",
       "shortcutName": "BetterX Desktop",
       "uninstallDisplayName": "BetterX Desktop",
-      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-Setup-${arch}.${ext}"
     },
     "portable": {
-      "artifactName": "${productName}-Portable-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-Portable-${arch}.${ext}"
     },
     "publish": {
       "provider": "github",
@@ -87,7 +87,7 @@
           "arch": ["x64", "arm64"]
         }
       ],
-      "artifactName": "${productName}-${version}-${arch}.dmg"
+      "artifactName": "${productName}-${arch}.dmg"
     },
     "linux": {
       "target": [
