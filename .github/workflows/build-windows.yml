@@ -15,14 +15,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
+    - name: Install bun
+      uses: bun/action-setup@v2
       with:
         version: 8
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
     - name: Build x64
-      run: pnpm build:win --x64
+      run: bun build:win --x64
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload x64 installer artifact
@@ -48,14 +48,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
+    - name: Install bun
+      uses: bun/action-setup@v2
       with:
         version: 8
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
     - name: Build ARM64
-      run: pnpm build:win --arm64
+      run: bun build:win --arm64
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload ARM64 artifact

@@ -18,16 +18,16 @@ jobs:
       with:
         node-version: '20'
         
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
+    - name: Install bun
+      uses: bun/action-setup@v2
       with:
         version: 8
         
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
       
     - name: Build
-      run: pnpm build:linux
+      run: bun build:linux
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         

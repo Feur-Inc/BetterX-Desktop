@@ -15,14 +15,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
+    - name: Install bun
+      uses: bun/action-setup@v2
       with:
         version: 8
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
     - name: Build Intel
-      run: pnpm build:mac --x64
+      run: bun build:mac --x64
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload Intel artifact
@@ -41,14 +41,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
+    - name: Install bun
+      uses: bun/action-setup@v2
       with:
         version: 8
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
     - name: Build ARM
-      run: pnpm build:mac --arm64
+      run: bun build:mac --arm64
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload ARM artifact

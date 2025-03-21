@@ -1,0 +1,175 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install bun
+      uses: bun/action-setup@v2
+      with:
+        version: 8
+    - name: Install dependencies
+      run: bun install
+    - name: Build x64
+      run: bun build:win --x64
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload x64 installer artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-windows-x64-installer
+        path: dist/*-Setup-*.exe
+        compression-level: 0
+        if-no-files-found: error
+    - name: Upload x64 portable artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-windows-x64-portable
+        path: dist/*-Portable-*.exe
+        compression-level: 0
+        if-no-files-found: error
+
+  build-windows-arm64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install bun
+      uses: bun/action-setup@v2
+      with:
+        version: 8
+    - name: Install dependencies
+      run: bun install
+    - name: Build ARM64
+      run: bun build:win --arm64
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload ARM64 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-windows-arm64
+        path: dist/*-arm64.exe
+        compression-level: 0
+        if-no-files-found: error
+
+  build-mac-intel:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install bun
+      uses: bun/action-setup@v2
+      with:
+        version: 8
+    - name: Install dependencies
+      run: bun install
+    - name: Build Intel
+      run: bun build:mac --x64
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Intel artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-mac-intel
+        path: dist/*-x64.dmg
+        compression-level: 0
+        if-no-files-found: error
+
+  build-mac-arm:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install bun
+      uses: bun/action-setup@v2
+      with:
+        version: 8
+    - name: Install dependencies
+      run: bun install
+    - name: Build ARM
+      run: bun build:mac --arm64
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload ARM artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-mac-arm
+        path: dist/*-arm64.dmg
+        compression-level: 0
+        if-no-files-found: error
+
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install bun
+      uses: bun/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: bun install
+      
+    - name: Build
+      run: bun build:linux
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Upload AppImage
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-appimage
+        path: dist/*.AppImage
+        compression-level: 0
+        if-no-files-found: error
+        
+    - name: Upload DEB
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-deb
+        path: dist/*.deb
+        compression-level: 0
+        if-no-files-found: error
+        
+    - name: Upload RPM
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-rpm
+        path: dist/*.rpm
+        compression-level: 0
+        if-no-files-found: error
+        
+    - name: Upload Snap
+      uses: actions/upload-artifact@v4
+      with:
+        name: betterx-linux-snap
+        path: dist/*.snap
+        compression-level: 0
+        if-no-files-found: error
