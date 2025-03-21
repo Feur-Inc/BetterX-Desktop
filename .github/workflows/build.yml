@@ -16,9 +16,9 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 8
+        bun-version: latest
     - name: Install dependencies
       run: bun install
     - name: Build x64
@@ -49,9 +49,9 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 8
+        bun-version: latest
     - name: Install dependencies
       run: bun install
     - name: Build ARM64
@@ -75,9 +75,9 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 8
+        bun-version: latest
     - name: Install dependencies
       run: bun install
     - name: Build Intel
@@ -101,9 +101,9 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 8
+        bun-version: latest
     - name: Install dependencies
       run: bun install
     - name: Build ARM
@@ -127,9 +127,9 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 8
+        bun-version: latest
     - name: Install dependencies
       run: bun install
     - name: Build
