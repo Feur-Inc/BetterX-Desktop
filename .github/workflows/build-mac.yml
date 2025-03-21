@@ -16,7 +16,7 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: bun/action-setup@v2
+      uses: oven-sh/setup-bun@v1
       with:
         version: 8
     - name: Install dependencies
@@ -42,7 +42,7 @@ jobs:
       with:
         node-version: '20'
     - name: Install bun
-      uses: bun/action-setup@v2
+      uses: oven-sh/setup-bun@v1
       with:
         version: 8
     - name: Install dependencies
