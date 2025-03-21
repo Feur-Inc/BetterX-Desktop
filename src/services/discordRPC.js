@@ -77,10 +77,7 @@ export function updateActivity(details, state) {
             state,
             startTimestamp,
             largeImageKey: 'betterx_logo',
-            largeImageText: 'BetterX Desktop',
-            buttons: [
-                { label: 'Get BetterX', url: 'https://github.com/Feur-Inc/BetterX-Desktop' }
-            ]
+            largeImageText: 'BetterX Desktop'
         });
     } catch (error) {
         console.error('Error updating Discord activity:', error);

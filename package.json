@@ -29,7 +29,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
-    "discord-rpc": "^3.1.0",
+    "discord-rpc": "4.0.1",
     "electron-context-menu": "^4.0.4",
     "electron-updater": "^6.1.7",
     "node-fetch": "^3.3.0"
