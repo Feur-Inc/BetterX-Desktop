@@ -191,7 +191,14 @@ contextBridge.exposeInMainWorld('electron', {
   getSettings: () => ipcRenderer.invoke('get-settings'),
   updateSetting: (key, value) => ipcRenderer.send('update-setting', key, value),
   chooseBundlePath: () => ipcRenderer.invoke('choose-bundle-path'),
-  onSettingsUpdate: (callback) => ipcRenderer.on('settings-updated', (_, settings) => callback(settings))
+  onSettingsUpdate: (callback) => ipcRenderer.on('settings-updated', (_, settings) => callback(settings)),
+  // Add update functions
+  updates: {
+    checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+    downloadUpdate: () => ipcRenderer.send('download-update'),
+    quitAndInstall: () => ipcRenderer.send('quit-and-install'),
+    onUpdateStatus: (callback) => ipcRenderer.on('update-status', (_, status) => callback(status))
+  }
 });
 
 // Add BetterX functionality

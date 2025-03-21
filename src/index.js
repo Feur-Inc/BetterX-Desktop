@@ -16,6 +16,7 @@ import { showSettingsWindow } from './windows/settingsWindow.js';
 import { watch } from 'fs'; // Add this import
 import { getVersion } from './utils/versionUtils.js';  // Add this import at the top with other imports
 import { initializeDiscordRPC, destroyDiscordRPC, updateActivity } from './services/discordRPC.js';
+import { initUpdater } from './services/updaterService.js'; // Add this import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -197,6 +198,9 @@ if (!gotTheLock) {
   app.whenReady().then(async () => {
     console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);
     setupSecurityPolicies();
+    
+    // Initialize the updater service
+    initUpdater();
     
     try {
       createWindows();
