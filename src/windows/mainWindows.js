@@ -67,25 +67,34 @@ export function createMainWindow(settings) {
         document.title = 'BetterX Desktop';
       `);
     });
-    // Handle external links
+    // Handle external links - UPDATED HANDLER
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      // Allow main twitter/x.com URLs and login URLs to open in the app
-      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|accounts\.google\.com|appleid\.apple\.com)/i) && 
-        !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
-      return { action: 'allow' };
+      // Create a consistent pattern for allowed domains
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co|accounts\.google\.com|appleid\.apple\.com)/i) && 
+          !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+        // For twitter/x domains, load in the same window
+        if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i)) {
+          mainWindow.loadURL(url);
+          return { action: 'deny' };
+        }
+        // For auth domains (Google/Apple), open in a new window
+        return { action: 'allow' };
       }
       // Open help pages and other URLs in default browser
       shell.openExternal(url);
       return { action: 'deny' };
     });
 
-    // Open clicked links in default browser
+    // Open clicked links in default browser - UPDATED HANDLER
     mainWindow.webContents.on('will-navigate', (event, url) => {
-      if (!url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|accounts\.google\.com|appleid\.apple\.com)/i) || 
-        url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+      // Allow navigation to twitter/x domains
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i) && 
+          !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+        return; // Allow the navigation
+      }
+      // Prevent navigation to external sites and open in browser instead
       event.preventDefault();
       shell.openExternal(url);
-      }
     });
 
     mainWindow.on('close', (event) => {
