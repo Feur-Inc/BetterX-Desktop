@@ -67,50 +67,27 @@ export function createMainWindow(settings) {
         document.title = 'BetterX Desktop';
       `);
     });
-    // Handle external links - UPDATED HANDLER
+    // Handle external links
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      // Special paths and subdomains that should open in browser
-      if (url.match(/^https?:\/\/(help|support|business)\.(twitter\.com|x\.com)/i) ||
-          url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)\/(tos|privacy|about|legal|developers|marketing|media)/i)) {
-        shell.openExternal(url);
-        return { action: 'deny' };
+      // Allow main twitter/x.com URLs and login URLs to open in the app
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|accounts\.google\.com|appleid\.apple\.com)/i) && 
+        !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+      return { action: 'allow' };
       }
-      
-      // Regular Twitter/X domains
-      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co|accounts\.google\.com|appleid\.apple\.com)/i)) {
-        // For twitter/x domains, load in the same window
-        if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i)) {
-          mainWindow.loadURL(url);
-          return { action: 'deny' };
-        }
-        // For auth domains (Google/Apple), open in a new window
-        return { action: 'allow' };
-      }
-      
-      // Open all other URLs in default browser
+      // Open help pages and other URLs in default browser
       shell.openExternal(url);
       return { action: 'deny' };
     });
 
-    // Open clicked links in default browser - UPDATED HANDLER
+    // Open clicked links in default browser
     mainWindow.webContents.on('will-navigate', (event, url) => {
-      // Special paths and subdomains that should open in browser
-      if (url.match(/^https?:\/\/(help|support|business)\.(twitter\.com|x\.com)/i) ||
-          url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)\/(tos|privacy|about|legal|developers|marketing|media)/i)) {
-        event.preventDefault();
-        shell.openExternal(url);
-        return;
-      }
-      
-      // Allow navigation to regular twitter/x domains
-      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i)) {
-        return; // Allow the navigation
-      }
-      
-      // Prevent navigation to external sites and open in browser instead
+      if (!url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|accounts\.google\.com|appleid\.apple\.com)/i) || 
+        url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
       event.preventDefault();
       shell.openExternal(url);
+      }
     });
+
 
     mainWindow.on('close', (event) => {
       // Only prevent close if we're not quitting and minimize to tray is enabled
