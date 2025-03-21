@@ -29,15 +29,29 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  // Register protocol handler
+  // Register protocol handlers for X/Twitter
   if (process.defaultApp) {
     if (process.argv.length >= 2) {
+      // When running from dev environment
       app.setAsDefaultProtocolClient('https', process.execPath, [
+        path.resolve(process.argv[1])
+      ]);
+      app.setAsDefaultProtocolClient('x-twitter', process.execPath, [
+        path.resolve(process.argv[1])
+      ]);
+      app.setAsDefaultProtocolClient('twitter', process.execPath, [
+        path.resolve(process.argv[1])
+      ]);
+      app.setAsDefaultProtocolClient('x-url', process.execPath, [
         path.resolve(process.argv[1])
       ]);
     }
   } else {
+    // When running as packaged app
     app.setAsDefaultProtocolClient('https');
+    app.setAsDefaultProtocolClient('x-twitter');
+    app.setAsDefaultProtocolClient('twitter');
+    app.setAsDefaultProtocolClient('x-url');
   }
 
   // Handle URLs opened on macOS
@@ -48,9 +62,17 @@ if (!gotTheLock) {
 
   // Handle URLs opened on Windows/Linux
   app.on('second-instance', (event, commandLine, workingDirectory) => {
-    const url = commandLine.find(arg => arg.startsWith('https://twitter.com') || arg.startsWith('https://x.com'));
-    if (url) {
-      handleIncomingUrl(url);
+    // Look for any Twitter/X URLs in the command line arguments
+    const xUrl = commandLine.find(arg => 
+      arg.startsWith('https://twitter.com') || 
+      arg.startsWith('https://x.com') ||
+      arg.startsWith('x-twitter:') ||
+      arg.startsWith('twitter:') ||
+      arg.startsWith('x-url:')
+    );
+    
+    if (xUrl) {
+      handleIncomingUrl(xUrl);
     }
     
     const mainWindow = getMainWindow();
@@ -62,6 +84,17 @@ if (!gotTheLock) {
   });
 
   function handleIncomingUrl(url) {
+    // Convert protocol URLs to https URLs if needed
+    if (url.startsWith('x-twitter:') || url.startsWith('twitter:') || url.startsWith('x-url:')) {
+      url = url.replace(/^(x-twitter:|twitter:|x-url:)\/\//, 'https://');
+      
+      // If no domain is specified, default to x.com
+      if (!url.includes('://')) {
+        url = 'https://x.com/' + url.split('/').pop();
+      }
+    }
+
+    // Parse the URL to make sure it's a valid Twitter/X URL
     if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)/i)) {
       const mainWindow = getMainWindow();
       if (mainWindow) {

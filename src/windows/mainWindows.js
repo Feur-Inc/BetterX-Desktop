@@ -50,7 +50,7 @@ export function createMainWindow(settings) {
       event.preventDefault();
     });
 
-    // Check for URL to load from command line
+    // Check for URL to load from command line or protocol handler
     const urlToLoad = app.commandLine.getSwitchValue('url-to-load') || 'https://x.com/login';
     mainWindow.loadURL(urlToLoad);
 
@@ -69,9 +69,15 @@ export function createMainWindow(settings) {
     });
     // Handle external links - UPDATED HANDLER
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      // Create a consistent pattern for allowed domains
-      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co|accounts\.google\.com|appleid\.apple\.com)/i) && 
-          !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+      // Special paths and subdomains that should open in browser
+      if (url.match(/^https?:\/\/(help|support|business)\.(twitter\.com|x\.com)/i) ||
+          url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)\/(tos|privacy|about|legal|developers|marketing|media)/i)) {
+        shell.openExternal(url);
+        return { action: 'deny' };
+      }
+      
+      // Regular Twitter/X domains
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co|accounts\.google\.com|appleid\.apple\.com)/i)) {
         // For twitter/x domains, load in the same window
         if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i)) {
           mainWindow.loadURL(url);
@@ -80,18 +86,27 @@ export function createMainWindow(settings) {
         // For auth domains (Google/Apple), open in a new window
         return { action: 'allow' };
       }
-      // Open help pages and other URLs in default browser
+      
+      // Open all other URLs in default browser
       shell.openExternal(url);
       return { action: 'deny' };
     });
 
     // Open clicked links in default browser - UPDATED HANDLER
     mainWindow.webContents.on('will-navigate', (event, url) => {
-      // Allow navigation to twitter/x domains
-      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i) && 
-          !url.match(/^https?:\/\/help\.(twitter\.com|x\.com)/i)) {
+      // Special paths and subdomains that should open in browser
+      if (url.match(/^https?:\/\/(help|support|business)\.(twitter\.com|x\.com)/i) ||
+          url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com)\/(tos|privacy|about|legal|developers|marketing|media)/i)) {
+        event.preventDefault();
+        shell.openExternal(url);
+        return;
+      }
+      
+      // Allow navigation to regular twitter/x domains
+      if (url.match(/^https?:\/\/(.*\.)?(twitter\.com|x\.com|t\.co)/i)) {
         return; // Allow the navigation
       }
+      
       // Prevent navigation to external sites and open in browser instead
       event.preventDefault();
       shell.openExternal(url);

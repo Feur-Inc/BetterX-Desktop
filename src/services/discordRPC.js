@@ -12,7 +12,6 @@ export async function initializeDiscordRPC() {
     if (isConnected) return;
 
     try {
-        // Set up event handlers before connecting
         rpc.on('ready', () => {
             console.log('Discord RPC connected');
             isConnected = true;
@@ -27,8 +26,8 @@ export async function initializeDiscordRPC() {
 
         // Login to Discord
         await rpc.login({ clientId });
-    } catch (error) {
-        console.error('Failed to connect to Discord:', error);
+    } catch {
+        console.log("Could not connect to Discord RPC. Make sure Discord is running.");
         isConnected = false;
     }
 }

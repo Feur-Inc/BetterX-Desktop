@@ -111,7 +111,16 @@
     {
       "name": "BetterX Web Protocol",
       "schemes": [
-        "https"
+        "https",
+        "x-twitter",
+        "twitter"
+      ],
+      "role": "Viewer"
+    },
+    {
+      "name": "X Links",
+      "schemes": [
+        "x-url"
       ],
       "role": "Viewer"
     }
