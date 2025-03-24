@@ -16,7 +16,7 @@ import { showSettingsWindow } from './windows/settingsWindow.js';
 import { watch } from 'fs'; // Add this import
 import { getVersion } from './utils/versionUtils.js';  // Add this import at the top with other imports
 import { initializeDiscordRPC, destroyDiscordRPC, updateActivity } from './services/discordRPC.js';
-import { initUpdater } from './services/updaterService.js'; // Add this import
+import { initUpdater, checkForUpdatesAndNotify } from './services/updaterService.js'; // Update this import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -225,6 +225,16 @@ if (!gotTheLock) {
     if (settings.enableDiscordRPC) {
       // Removed logging to reduce console spam
       updateActivity(details, state);
+    }
+  });
+
+  // Add this IPC handler for manual update checks
+  ipcMain.handle('check-for-updates-and-notify', async () => {
+    try {
+      return await checkForUpdatesAndNotify();
+    } catch (error) {
+      console.error('Error checking for updates and notifying:', error);
+      return { error: error.message };
     }
   });
 

@@ -5,7 +5,7 @@
       "name": "betterx-desktop",
       "dependencies": {
         "custom-electron-titlebar": "^4.2.8",
-        "discord-rpc": "^3.1.0",
+        "discord-rpc": "4.0.1",
         "electron-context-menu": "^4.0.4",
         "electron-updater": "^6.1.7",
         "node-fetch": "^3.3.0",
@@ -213,7 +213,7 @@
 
     "dir-compare": ["dir-compare@4.2.0", "", { "dependencies": { "minimatch": "^3.0.5", "p-limit": "^3.1.0 " } }, "sha512-2xMCmOoMrdQIPHdsTawECdNPwlVFB9zGcz3kuhmBO6U3oU+UQjsue0i8ayLKpgBcm+hcXPMVSGUN9d+pvJ6+VQ=="],
 
-    "discord-rpc": ["discord-rpc@3.2.0", "", { "dependencies": { "node-fetch": "^2.6.1", "ws": "^7.3.1" }, "peerDependencies": { "register-scheme": "github:devsnek/node-register-scheme" } }, "sha512-KJv0EVbGMlr04HoG6f5b3wD7X9kSHzQ2Ed2qfHSDvYJ1MkE8RbCQmMcQQrSvAxpfsqZgUjB/bsfi/mjyicCH+A=="],
+    "discord-rpc": ["discord-rpc@4.0.1", "", { "dependencies": { "node-fetch": "^2.6.1", "ws": "^7.3.1" }, "optionalDependencies": { "register-scheme": "github:devsnek/node-register-scheme" } }, "sha512-HOvHpbq5STRZJjQIBzwoKnQ0jHplbEWFWlPDwXXKm/bILh4nzjcg7mNqll0UY7RsjFoaXA7e/oYb/4lvpda2zA=="],
 
     "dmg-builder": ["dmg-builder@26.0.6", "", { "dependencies": { "app-builder-lib": "26.0.6", "builder-util": "26.0.4", "builder-util-runtime": "9.3.1", "fs-extra": "^10.1.0", "iconv-lite": "^0.6.2", "js-yaml": "^4.1.0" }, "optionalDependencies": { "dmg-license": "^1.0.11" } }, "sha512-LwUyKgzct1t6bHhfzx0VFUvmtkrZPfYN2viMAn2nPlGxrEnMDlupUwuvfkrLqs4UuIWHj4RxY7FiaaCsrSmj3w=="],
 
