@@ -1,17 +1,21 @@
-import { Tray, Menu, app } from 'electron';
+import { Tray, Menu, app, nativeImage } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { showAboutDialog } from '../windows/aboutWindow.js';
 import { showSettingsWindow } from '../windows/settingsWindow.js';
 import { resetBetterX } from '../services/settingsService.js';
+import { checkForAppUpdates } from '../utils/appUpdater.js';
+import { showUpdateNotificationWindow } from '../windows/updateNotificationWindow.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let tray = null;  // Change from const to let
+let tray = null;
 
 export function initTray(win) {
+  if (tray) return;
+
   const onTrayClick = () => {
     if (win.isVisible()) win.hide();
     else win.show();
@@ -47,6 +51,16 @@ export function initTray(win) {
       type: "separator"
     },
     {
+      label: "Check for Updates",
+      click: () => {
+        checkForAppUpdates();
+        showUpdateNotificationWindow();
+      }
+    },
+    {
+      type: "separator"
+    },
+    {
       label: "Restart",
       click() {
         if (tray) {
@@ -71,19 +85,21 @@ export function initTray(win) {
     console.warn(`Tray icon not found at ${iconPath}. Using default icon.`);
   }
 
-  tray = new Tray(iconPath);
+  const trayIcon = nativeImage.createFromPath(iconPath);
+  tray = new Tray(trayIcon);
   tray.setToolTip("BetterX");
   tray.setContextMenu(trayMenu);
+
   tray.on("click", onTrayClick);
 }
 
 export function destroyTray() {
-    if (tray) {
-        tray.destroy();
-        tray = null;
-    }
+  if (tray) {
+    tray.destroy();
+    tray = null;
+  }
 }
 
 export function getTray() {
-    return tray;
+  return tray;
 }

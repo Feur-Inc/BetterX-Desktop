@@ -1,7 +1,7 @@
 {
   "name": "betterx-desktop",
   "productName": "BetterX Desktop",
-  "version": "2.1.1-beta",
+  "version": "2.1.2-beta",
   "homepage": "https://github.com/Feur-Inc/BetterX-Desktop",
   "description": "Desktop application for BetterX, enhancing your browsing experience",
   "main": "src/index.js",
@@ -29,13 +29,13 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "custom-electron-titlebar": "^4.2.8",
-    "discord-rpc": "^3.1.0",
+    "discord-rpc": "4.0.1",
     "electron-context-menu": "^4.0.4",
     "electron-updater": "^6.1.7",
     "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "electron": "^34.1.1",
+    "electron": "35.0.3",
     "electron-builder": "^26.0.6"
   },
   "build": {
@@ -52,7 +52,7 @@
           "arch": ["x64"]
         }
       ],
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "artifactName": "${productName}-${arch}.${ext}",
       "requestedExecutionLevel": "asInvoker",
       "signAndEditExecutable": false,
       "forceCodeSigning": false
@@ -69,15 +69,16 @@
       "include": "installer.nsh",
       "shortcutName": "BetterX Desktop",
       "uninstallDisplayName": "BetterX Desktop",
-      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-Setup-${arch}.${ext}"
     },
     "portable": {
-      "artifactName": "${productName}-Portable-${version}-${arch}.${ext}"
+      "artifactName": "${productName}-Portable-${arch}.${ext}"
     },
     "publish": {
       "provider": "github",
       "owner": "Feur-Inc",
-      "repo": "BetterX-Desktop"
+      "repo": "BetterX-Desktop",
+      "releaseType": "draft"
     },
     "mac": {
       "category": "public.app-category.entertainment",
@@ -87,7 +88,7 @@
           "arch": ["x64", "arm64"]
         }
       ],
-      "artifactName": "${productName}-${version}-${arch}.dmg"
+      "artifactName": "${productName}-${arch}.dmg"
     },
     "linux": {
       "target": [

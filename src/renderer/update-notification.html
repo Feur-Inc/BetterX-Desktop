@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>BetterX Update</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      color: #333;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    h2 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #1DA1F2;
+    }
+    
+    .update-info {
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    
+    .progress-container {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+    
+    progress {
+      width: 100%;
+      height: 10px;
+    }
+    
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: auto;
+    }
+    
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    button.primary {
+      background-color: #1DA1F2;
+      color: white;
+    }
+    
+    button.secondary {
+      background-color: #e6e6e6;
+      color: #333;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>BetterX Update</h2>
+    
+    <div id="checking" class="update-info hidden">
+      Checking for updates...
+    </div>
+    
+    <div id="available" class="update-info hidden">
+      <p>A new version of BetterX Desktop is available!</p>
+      <p id="version-info"></p>
+    </div>
+    
+    <div id="not-available" class="update-info hidden">
+      <p>You're running the latest version of BetterX Desktop.</p>
+      <p id="current-version"></p>
+    </div>
+    
+    <div id="downloaded" class="update-info hidden">
+      <p>Update is ready to install!</p>
+      <p>The update will be applied the next time the app restarts.</p>
+    </div>
+    
+    <div id="error" class="update-info hidden">
+      <p>Failed to check for updates.</p>
+      <p id="error-message"></p>
+    </div>
+    
+    <div id="progress-container" class="progress-container hidden">
+      <p id="download-progress">Downloading: 0%</p>
+      <progress id="download-bar" value="0" max="100"></progress>
+    </div>
+    
+    <div class="buttons">
+      <button id="close-btn" class="secondary">Close</button>
+      <button id="check-btn" class="primary">Check for Updates</button>
+      <button id="download-btn" class="primary hidden">Download</button>
+      <button id="install-btn" class="primary hidden">Install Now</button>
+    </div>
+  </div>
+  
+  <script>
+    // Elements
+    const checkingEl = document.getElementById('checking');
+    const availableEl = document.getElementById('available');
+    const notAvailableEl = document.getElementById('not-available');
+    const downloadedEl = document.getElementById('downloaded');
+    const errorEl = document.getElementById('error');
+    const progressContainerEl = document.getElementById('progress-container');
+    const downloadProgressEl = document.getElementById('download-progress');
+    const downloadBarEl = document.getElementById('download-bar');
+    const versionInfoEl = document.getElementById('version-info');
+    const currentVersionEl = document.getElementById('current-version');
+    const errorMessageEl = document.getElementById('error-message');
+    
+    // Buttons
+    const closeBtn = document.getElementById('close-btn');
+    const checkBtn = document.getElementById('check-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const installBtn = document.getElementById('install-btn');
+    
+    // Hide all sections
+    function hideAllSections() {
+      checkingEl.classList.add('hidden');
+      availableEl.classList.add('hidden');
+      notAvailableEl.classList.add('hidden');
+      downloadedEl.classList.add('hidden');
+      errorEl.classList.add('hidden');
+      progressContainerEl.classList.add('hidden');
+      
+      // Hide action buttons
+      downloadBtn.classList.add('hidden');
+      installBtn.classList.add('hidden');
+      checkBtn.classList.remove('hidden');
+    }
+    
+    // Initialize
+    async function initialize() {
+      const updateState = await window.electron.updates.getUpdateState();
+      
+      if (updateState.updateDownloaded) {
+        showDownloaded();
+      } else if (updateState.updateAvailable) {
+        showAvailable(updateState.updateInfo);
+      } else {
+        // Start with the check button
+        hideAllSections();
+      }
+      
+      // Get app version
+      const settings = await window.electron.getSettings();
+      if (settings && settings.appVersion) {
+        currentVersionEl.textContent = `Current version: ${settings.appVersion}`;
+      }
+    }
+    
+    // Show checking state
+    function showChecking() {
+      hideAllSections();
+      checkingEl.classList.remove('hidden');
+      checkBtn.classList.add('hidden');
+    }
+    
+    // Show available state
+    function showAvailable(info) {
+      hideAllSections();
+      availableEl.classList.remove('hidden');
+      downloadBtn.classList.remove('hidden');
+      
+      if (info && info.version) {
+        versionInfoEl.textContent = `Version ${info.version} is available to download.`;
+      }
+    }
+    
+    // Show not available state
+    function showNotAvailable() {
+      hideAllSections();
+      notAvailableEl.classList.remove('hidden');
+    }
+    
+    // Show downloaded state
+    function showDownloaded() {
+      hideAllSections();
+      downloadedEl.classList.remove('hidden');
+      installBtn.classList.remove('hidden');
+      checkBtn.classList.add('hidden');
+    }
+    
+    // Show error state
+    function showError(message) {
+      hideAllSections();
+      errorEl.classList.remove('hidden');
+      
+      if (message) {
+        errorMessageEl.textContent = message;
+      }
+    }
+    
+    // Show progress
+    function showProgress(percent) {
+      progressContainerEl.classList.remove('hidden');
+      downloadProgressEl.textContent = `Downloading: ${Math.round(percent)}%`;
+      downloadBarEl.value = percent;
+    }
+    
+    // Event listeners
+    closeBtn.addEventListener('click', () => {
+      window.electron.ipcRenderer.send('close-update-notification');
+    });
+    
+    checkBtn.addEventListener('click', async () => {
+      showChecking();
+      try {
+        await window.electron.updates.checkForUpdates();
+      } catch (error) {
+        showError(error.message || 'Failed to check for updates');
+      }
+    });
+    
+    downloadBtn.addEventListener('click', () => {
+      window.electron.updates.downloadUpdate();
+      showProgress(0);
+    });
+    
+    installBtn.addEventListener('click', () => {
+      window.electron.updates.quitAndInstall();
+    });
+    
+    // Listen for update status
+    window.electron.updates.onUpdateStatus((status) => {
+      switch (status.status) {
+        case 'checking-for-update':
+          showChecking();
+          break;
+        case 'update-available':
+          showAvailable(status.data);
+          break;
+        case 'update-not-available':
+          showNotAvailable();
+          break;
+        case 'download-progress':
+          if (status.data && typeof status.data.percent === 'number') {
+            showProgress(status.data.percent);
+          }
+          break;
+        case 'update-downloaded':
+          showDownloaded();
+          break;
+        case 'error':
+          showError(status.data ? status.data.message : null);
+          break;
+      }
+    });
+    
+    // Initialize on load
+    initialize();
+  </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ export async function checkForUpdates(settings) {
         }
         return { newHash: remoteHash };
       } else {
-        console.log('No new updates available');
+        console.log('No new bundle updates available');
       }
     } catch (error) {
       console.error('Error checking for updates:', error);

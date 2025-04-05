@@ -1,87 +1,77 @@
 import fs from 'fs';
 import path from 'path';
-import { app, dialog } from 'electron';
-import { BETTERX_PATH, SETTINGS_PATH } from '../config/constants.js';
+import { SETTINGS_PATH, BETTERX_PATH, BUNDLE_PATH } from '../config/constants.js';
+import { app } from 'electron';
+import { getVersion } from '../utils/versionUtils.js';
 
-export function ensureSettingsFile() {
-  const defaultSettings = {
-    bundlePath: path.join(BETTERX_PATH, 'bundle.js'),
-    disableUpdates: false,
-    currentHash: "",
-    skippedVersion: "",
-    ignoredVersion: "",
-    minimizeToTray: true,
-    startMinimized: false,
-    autoStart: app.getLoginItemSettings().openAtLogin,
-    enableTransparency: false
-  };
+// Default settings
+const defaultSettings = {
+  theme: 'default',
+  startMinimized: false,
+  bundle: null, 
+  bundlePath: BUNDLE_PATH,
+  enableTransparency: false,
+  minimizeToTray: true,
+  autoStart: false,
+  themePath: null,
+  enableDiscordRPC: false,
+  appVersion: getVersion(),
+  checkForUpdates: true,
+  autoUpdateNotify: true
+};
 
+// Ensure settings directory exists
+function ensureSettingsDir() {
   if (!fs.existsSync(BETTERX_PATH)) {
     fs.mkdirSync(BETTERX_PATH, { recursive: true });
   }
-
-  if (!fs.existsSync(SETTINGS_PATH)) {
-    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(defaultSettings, null, 2));
-  }
-
-  return defaultSettings;
 }
 
+// Load settings
 export function loadSettings() {
+  ensureSettingsDir();
+  
   try {
-    if (!fs.existsSync(SETTINGS_PATH)) {
-      return ensureSettingsFile();
+    if (fs.existsSync(SETTINGS_PATH)) {
+      const settingsData = fs.readFileSync(SETTINGS_PATH, 'utf8');
+      const settings = JSON.parse(settingsData);
+      
+      // Merge with default settings to ensure we have all the needed properties
+      return { ...defaultSettings, ...settings, appVersion: getVersion() };
+    } else {
+      // Create default settings file if it doesn't exist
+      saveSettings(defaultSettings);
+      return defaultSettings;
     }
-    const settings = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
-    return settings;
   } catch (error) {
     console.error('Error loading settings:', error);
-    return ensureSettingsFile();
+    return defaultSettings;
   }
 }
 
-export function saveSettings(settings) {
+// Save settings
+function saveSettings(settings) {
+  ensureSettingsDir();
+  
   try {
-    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
-    return true;
+    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2), 'utf8');
+    return settings;
   } catch (error) {
     console.error('Error saving settings:', error);
-    return false;
+    return null;
   }
 }
 
+// Update a single setting
 export function updateSetting(key, value) {
   const settings = loadSettings();
   settings[key] = value;
-  saveSettings(settings);
-  return settings;
+  return saveSettings(settings);
 }
 
-export async function resetBetterX(win) {
-  try {
-    const { response } = await dialog.showMessageBox(win, {
-      message: "Are you sure you want to reset BetterX?",
-      detail: "This will delete all BetterX data and restart the application.",
-      buttons: ["Yes", "No"],
-      cancelId: 1,
-      defaultId: 0,
-      type: "warning"
-    });
-    
-    if (response === 1) return; // User clicked "No"
-
-    // Delete the BETTERX directory including desktop.settings.json
-    await fs.promises.rm(BETTERX_PATH, { recursive: true, force: true });
-    
-    // Recreate the BETTERX directory and default settings file
-    ensureSettingsFile();
-
-    console.log('BetterX directory and settings reset successfully');
-
-    app.relaunch();
-    app.exit(0);
-  } catch (error) {
-    console.error('Error resetting BetterX:', error);
-    throw error;
-  }
+// Update multiple settings at once
+export function updateSettings(newSettings) {
+  const settings = loadSettings();
+  const updatedSettings = { ...settings, ...newSettings };
+  return saveSettings(updatedSettings);
 }
