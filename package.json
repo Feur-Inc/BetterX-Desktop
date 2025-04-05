@@ -1,7 +1,7 @@
 {
   "name": "betterx-desktop",
   "productName": "BetterX Desktop",
-  "version": "2.0.1-beta",
+  "version": "2.1.2-beta",
   "homepage": "https://github.com/Feur-Inc/BetterX-Desktop",
   "description": "Desktop application for BetterX, enhancing your browsing experience",
   "main": "src/index.js",
@@ -74,10 +74,12 @@
     "portable": {
       "artifactName": "${productName}-Portable-${arch}.${ext}"
     },
+    "repository": "https://github.com/Feur-Inc/BetterX-Desktop",
     "publish": {
       "provider": "github",
       "owner": "Feur-Inc",
-      "repo": "BetterX-Desktop"
+      "repo": "BetterX-Desktop",
+      "releaseType": "release"
     },
     "mac": {
       "category": "public.app-category.entertainment",

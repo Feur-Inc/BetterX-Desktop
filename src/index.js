@@ -1,4 +1,5 @@
 import { app, session, ipcMain, BrowserWindow, dialog, desktopCapturer, clipboard, nativeImage } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import contextMenu from 'electron-context-menu';
@@ -8,15 +9,15 @@ import { handleUpdateResponse } from './utils/updateUtils.js';
 import { TEST_UPDATE_MODE, THEME_PATH } from './config/constants.js';
 import { initTray, destroyTray } from './tray/trayMenu.js';
 import { loadSettings, updateSetting } from './services/settingsService.js';
-import fetch from 'node-fetch';  // Add this import
-import fs from 'fs'; // Ajouté pour éviter l'erreur "fs is not defined"
-import { ensureBundle } from './services/bundleService.js'; // Ajout de l'import
+import fetch from 'node-fetch';
+import fs from 'fs';
+import { ensureBundle } from './services/bundleService.js';
 import fsPromises from 'fs/promises';
 import { showSettingsWindow } from './windows/settingsWindow.js';
-import { watch } from 'fs'; // Add this import
-import { getVersion } from './utils/versionUtils.js';  // Add this import at the top with other imports
+import { watch } from 'fs';
+import { getVersion } from './utils/versionUtils.js';
 import { initializeDiscordRPC, destroyDiscordRPC, updateActivity } from './services/discordRPC.js';
-import { initUpdater } from './services/updaterService.js'; // Add this import
+import { initAutoUpdater, checkForAppUpdates } from './utils/appUpdater.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,12 @@ let isQuitting = false;
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
+
+// Initialize auto-updater
+initAutoUpdater();
+
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
 
 if (!gotTheLock) {
   app.quit();
@@ -232,8 +239,8 @@ if (!gotTheLock) {
     console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);
     setupSecurityPolicies();
     
-    // Initialize the updater service
-    initUpdater();
+    // Check for app updates on start
+    checkForAppUpdates();
     
     try {
       createWindows();
@@ -287,10 +294,17 @@ if (!gotTheLock) {
   });
 
   // Add this new handler
+  let hasCheckedForUpdates = false;
+
   app.on('activate', () => {
     const mainWindow = getMainWindow();
     if (mainWindow) {
       mainWindow.show();
+    }
+
+    if (!hasCheckedForUpdates) {
+      autoUpdater.checkForUpdates();
+      hasCheckedForUpdates = true;
     }
   });
 
@@ -338,6 +352,13 @@ if (!gotTheLock) {
             initializeDiscordRPC();
         } else {
             destroyDiscordRPC();
+        }
+        break;
+        
+      case 'checkForUpdates':
+        if (value) {
+          // Check for updates immediately if the setting was enabled
+          checkForAppUpdates();
         }
         break;
     }
