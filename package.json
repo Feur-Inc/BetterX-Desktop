@@ -74,7 +74,6 @@
     "portable": {
       "artifactName": "${productName}-Portable-${arch}.${ext}"
     },
-    "repository": "https://github.com/Feur-Inc/BetterX-Desktop",
     "publish": {
       "provider": "github",
       "owner": "Feur-Inc",
