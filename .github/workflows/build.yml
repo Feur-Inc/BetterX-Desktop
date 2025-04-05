@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+permissions:
+  contents: write
+  packages: read
+
 jobs:
   build-windows-x64:
     runs-on: windows-latest
@@ -169,6 +173,8 @@ jobs:
     needs: [build-windows-x64, build-windows-arm64, build-mac-intel, build-mac-arm, build-linux]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       
