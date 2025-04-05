@@ -47,7 +47,10 @@ export function initUpdater() {
   });
 
   ipcMain.on('download-update', () => {
-    autoUpdater.downloadUpdate();
+    autoUpdater.downloadUpdate().catch(err => {
+      console.error('Error downloading update:', err);
+      sendStatusToWindow('error', err);
+    });
   });
 
   ipcMain.on('quit-and-install', () => {
@@ -62,7 +65,7 @@ export function initUpdater() {
 
   // We should wait a bit before checking for updates
   setTimeout(() => {
-    autoUpdater.checkForUpdates().catch(err => {
+    checkForUpdatesAndNotify().catch(err => {
       console.error('Auto update check failed:', err);
     });
   }, 10000); // Check after 10 seconds
@@ -75,6 +78,16 @@ function sendStatusToWindow(status, data = null) {
     mainWindow.webContents.send('update-status', { status, data });
     console.log(`Update status: ${status}`, data || '');
   }
+}
+
+// New function to check for updates and notify the user
+export function checkForUpdatesAndNotify() {
+  if (!app.isPackaged) {
+    console.log('Running in development mode, skipping update notification');
+    return Promise.resolve({ updateAvailable: false });
+  }
+
+  return autoUpdater.checkForUpdatesAndNotify();
 }
 
 // Manual check function that can be called from elsewhere

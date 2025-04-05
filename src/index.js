@@ -235,6 +235,16 @@ if (!gotTheLock) {
     }
   });
 
+  // Add this IPC handler for manual update checks
+  ipcMain.handle('check-for-updates-and-notify', async () => {
+    try {
+      return await checkForUpdatesAndNotify();
+    } catch (error) {
+      console.error('Error checking for updates and notifying:', error);
+      return { error: error.message };
+    }
+  });
+
   app.whenReady().then(async () => {
     console.log('TEST_UPDATE_MODE:', TEST_UPDATE_MODE);
     setupSecurityPolicies();
